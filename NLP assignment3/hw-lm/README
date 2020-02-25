@@ -1,0 +1,16 @@
+The files you will need for this assignment are not on the web.
+You can find them on the ugrad network in /usr/local/data/cs465/hw-lm.
+
+You will want to copy some of the code files to your own directory so
+you can modify them.
+
+It may be convenient to use symbolic links to avoid typing long filenames.
+E.g., 
+   ln -s /usr/local/data/cs465/hw-lm/english_spanish/train ~/estrain
+will create a subdirectory "estrain" under your home directory.
+But this subdirectory is really just a shortcut to the official
+training directory.
+
+As the assignment explains, the directory
+/usr/local/data/cs465/hw-lm/code contains some code that you 
+can run right away.

@@ -1,0 +1,1 @@
+SUBJECT: Re : &NAME corpses &NAME - RCV1 is indeed hierarchical and documents can have multiple labels , including both leaves and nonleaves . The assignment of ancestors of leaves is somewhat inconsistent , however , and also varies among the &NUM subhierarchies . The draft &NAME paper describes that , and I can send a copy if you do n't have it . &NAME 

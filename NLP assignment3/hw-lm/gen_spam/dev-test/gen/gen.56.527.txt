@@ -1,0 +1,1 @@
+SUBJECT: [ &NAME ] Program of the Workshop ' &NAME and &NAME ' Program of the Workshop ' Natural Language Processing and &NAME ' &WEBSITE in conjunction with &NAME &NUM Conference &WEBSITE &NAME , &NAME June &NUM , &NUM Organizers of the workshop : &NAME &NAME ( &EMAIL ) &NAME &NAME &NAME &NAME ( &EMAIL ) 

@@ -1,0 +1,1 @@
+SUBJECT: &NAME Projects Dear &NAME , Should I be worried that I have received no project proposals for the &NAME so far ? Would you like me to send out a reminder message ? Thanks , &NAME 

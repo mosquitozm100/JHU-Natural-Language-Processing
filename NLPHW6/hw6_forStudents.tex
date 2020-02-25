@@ -1,0 +1,1705 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1.2in]{geometry}
+\usepackage{adjustbox}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{enumitem}
+\usepackage{verbatim}
+\usepackage[osf]{libertine} \renewcommand*\ttdefault{txtt} % 20% tighter than courier
+
+\usepackage[colorlinks]{hyperref}
+\newif\ifpdf\ifx\pdfoutput\undefiined\pdffalse\else\pdfoutput=1\pdftrue\fi
+\ifpdf \usepackage[pdftex]{graphicx} \pdfcompresslevel=9 \else
+\usepackage{graphicx} \fi
+\ifpdf \pdfcatalog{/PageMode (/UseNone)} \fi    % no thumbnails or outline
+\advance\oddsidemargin -0.5in \advance\textwidth 1in
+
+\newcommand{\defeq}{\stackrel{\mbox{\tiny def}}{=}}
+\newcommand{\iwh}{{\it wh\/}}
+\newcommand{\argmax}{\mathop{\mathrm{argmax}}}
+
+\newcommand{\deliverableneeded}[0]{} %\ensuremath{\star}}
+
+% for framing paragraphs
+\usepackage{framed}
+
+\usepackage{color,soul}
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+\newcommand{\Note}[1]{}
+%\renewcommand{\Note}[1]{\hl{[#1]}}
+\newcommand{\NoteSigned}[3]{{\sethlcolor{#2}\Note{#1: #3}}}
+\newcommand{\NoteJE}[1]{\NoteSigned{JE}{YellowGreen}{#1}}
+\newcommand{\NoteFF}[1]{\NoteSigned{FF}{LightBlue}{#1}}
+
+\newcommand{\atsign}{{\makeatletter @\makeatother}}
+\newcommand{\overrule}[3]{\overbrace{\rule{#1}{#2}}^{\parbox[b]{#1}{\centering #3}}}
+\newcommand{\underrule}[3]{\underbrace{\rule{#1}{#2}}_{\parbox[t]{#1}{\centering #3}}}
+
+\usepackage[textsize=large]{todonotes}
+\newcommand{\note}[4][]{\todo[author=#2,color=#3,size=\scriptsize,fancyline,caption={},#1]{#4}} % default note
+\newcommand{\arya}[2][]{\note[inline,#1]{arya}{pink}{#2}}
+\newcommand{\suzanna}[2][]{\note[inline,#1]{suzanna}{lime}{#2}}
+\newcommand{\kevin}[2][]{\note[inline,#1]{kevin}{orange}{#2}}
+\newcommand{\fixme}[2][]{\todo[color=pink,size=\scriptsize,fancyline,caption={},#1]{#2}}
+
+% Handin symbols
+\usepackage{bbding}
+\usepackage{pifont}
+\newcommand{\handinsym}{\color{blue}{\HandLeftUp}}
+\newcommand{\handinecsym}{\color{blue}{\Large\ding{44}}}  % hand making victory symbol
+\newcommand{\handinelsewheresym}{\color{blue}{\HandPencilLeft}}
+\reversemarginpar
+\newcounter{handin}
+\newcommand{\handin}{\stepcounter{handin}\hspace{0pt}\marginpar{\hfill\handinsym$_{\arabic{handin}}$}}
+\newcommand{\handinec}{\stepcounter{handin}\hspace{0pt}\marginpar{\hfill\handinecsym$_{\arabic{handin}}$}}
+\newcommand{\handinelsewhere}{\stepcounter{handin}\hspace{0pt}\marginpar{\hfill\handinelsewheresym$_{\arabic{handin}}$}}
+\newcommand{\largehandin}{\marginpar{\hfill\LARGE\handinsym}}
+
+\begin{document}
+\title{\vspace{-1in}601.465/665 --- Natural Language Processing \\
+  Assignment 6: Finite-State Programming\footnote{Many thanks to Frank Ferraro, who
+    co-wrote this assignment and wrote the accompanying scripts, and to Jason Eisner.}}
+\author{Prof.~Kevin Duh and Jason Eisner --- Fall 2019 \\
+  Due date: Tuesday 3 December, 11:59pm  }
+\date{}
+\maketitle\thispagestyle{empty}
+
+This assignment exposes you to finite-state programming.  You will
+build finite-state machines automatically using open-source toolkits.
+You'll also get to work with word pronunciations and character-level edits.\looseness=-1
+
+\medskip
+\noindent\framebox{\parbox{\textwidth}{{\bf Collaboration:} {\bf {\em
+        You may work in pairs on this assignment,}} as it is fairly long
+    and involved.  That is, if you choose, you may collaborate with
+    one partner from the
+    class, handing in a single homework with multiple names on it.
+    However:
+    \begin{enumerate}[nosep]
+    \item You are expected to do the work {\em together}, not divide it up:
+      your solutions should emerge from collaborative real-time
+      discussions with the whole group present.  \medskip
+    \item Your \texttt{README} file should describe at the top what
+      each of you contributed, so that we know you shared the
+      work fairly.
+    \item Your partner \textbf{must not be the same partner} as you had for HW5. Make new friends! :-)
+
+    \end{enumerate}
+    In any case, observe
+    \href{http://cs.jhu.edu/integrity-code/}{academic integrity} and
+    never claim any work by third parties as your own.}}
+
+\medskip
+\noindent {\bf Reading:} There is no separate reading this time.  Instead, we'll give you
+information and instructions as you work through the assignment.
+
+\medskip\noindent
+%\begin{framed}
+{\bf What to hand in (via Gradescope):}
+  \largehandin As usual, you should submit a {\tt README.pdf} file with answers to
+  all the questions in the text.  We'll also ask you to submit a {\tt
+    .zip} archive of all the grammar files you create:
+
+\medskip
+\begin{adjustbox}{max width=\linewidth}
+	\begin{tabular}{l|l|l}
+	\textbf{File} & \textbf{Questions} & \textbf{Should contain} \\\hline\hline
+	\texttt{binary.grm} & \ref{q:binary}, \ref{q:binary-harder}, & \texttt{First, Second, Disagreements, Triplets, NotPillars, Oddlets,} \\
+	                    & \ \ \ref{q:binary-evenmore} & \ \ \texttt{WFlip, WeightedMultipath} \\
+	\texttt{rewrite.grm} & \ref{q:introducefst}, \ref{q:rewrite-cd} & \texttt{Cross}, \texttt{BitFlip1}, \texttt{BitFlip2}, \texttt{Parity1}, \texttt{Parity2}, \texttt{Parity3}, \texttt{UnParity}, \texttt{Split} \\
+	\texttt{chunker.grm} & \ref{q:nounphrase} & \texttt{NP, MakeNmod, TransformNP, BracketTransform, BracketResults}\\
+
+	\texttt{noisy.grm} & \ref{q:lm}, \ref{q:channel}, \ref{q:channel-ec} & \texttt{CompleteWord, DelSpaces, SpellText, Generate, RandomWord,}  \\
+                         & & \ \ \ \texttt{Spell \textnormal{(revised)}, PrintText \textnormal{(revised)}} 
+	\end{tabular}
+\end{adjustbox}
+\medskip
+
+\noindent\textbf{Software (not Python this time!):}
+\begin{itemize}
+\item {\bf OpenFST} is a very efficient C++ toolkit for building and
+  manipulating semiring-weighted FSMs.  You can use the C++ API to
+  directly specify states, arcs, and weights, or to combine existing
+  FSMs through operations like union and composition.  You can also
+  store these FSMs in {\tt .fst} files and manipulate them with
+  command-line utilities like {\tt fstunion} and {\tt fstcompose}.
+
+  A symbol table ({\tt .sym} file, or part of some {\tt .fst} files)
+  specifies the internal representation of the upper or lower
+  alphabet.  E.g., the integers 1, 2, 3, \ldots might internally
+  represent the letters {\tt a}, {\tt b}, {\tt c}, \ldots or perhaps
+  the words {\tt aardvark}, {\tt aback}, {\tt abacus}, \ldots.
+  OpenFST uses these integers to label arcs in its data structures and
+  file format ($\epsilon$ arcs are labeled with 0).  It is only the
+  symbol table that tells what a given FSM's integer labels are
+  supposed to {\em mean}.\NoteJE{hmm, is that still true nowadays?
+    fstinfo actually seems to say that the fst file includes a symbol
+    table} \NoteFF{That may be true for openfst commands, but maybe
+    not for Thrax? See issues 5 and 7.}
+\end{itemize}
+However, we will not be using OpenFST directly (nor its Python
+interface, \href{http://www.openfst.org/twiki/bin/view/GRM/PyniniDownload}{Pynini}).  Instead, we will use
+two packages that provide a fairly friendly interface to OpenFST:
+\begin{itemize}
+\item {\bf Thrax} is an extended regular expression language that you
+  can use to define collections of finite-state machines.  A Thrax
+  grammar can be created with any text editor and is stored in a {\tt
+    .grm} file.  The Thax compiler {\em compiles} this into a {\tt
+    .far} file---an ``\textbf{f}st \textbf{ar}chive'' that contains
+  multiple named OpenFST machines and symbol tables.
+\item Since regular expressions are not good at specifying the
+  topology of $n$-gram models, there's also the {\bf NGram} toolkit,
+  which builds a $n$-gram backoff language model from a corpus.  It
+  supports many types of smoothing.  The resulting language model is
+  represented as a weighted FSA in OpenFST format.
+\end{itemize}
+
+
+First, get set up!
+
+{\bf Optional}: OpenFST, NGram, and Thrax are installed on the \texttt{ugrad}
+    machines (as well as the graduate network).  It's probably easiest
+    to do the assignment there.  But if you would prefer to install a
+    copy on your own machine,
+    \begin{enumerate}
+    \item Download and install OpenFST:
+      \\ \url{http://www.openfst.org/twiki/bin/view/FST/FstDownload}
+
+      \begin{itemize}
+      \item \textbf{Important:} Make sure you run \texttt{configure} with the flag \texttt{--enable-far=yes}. If you don't, Thrax won't work!
+
+      \item You should also use the flag \texttt{--enable-ngram-fsts=yes}.
+
+      \item Do \textbf{not} use \texttt{--enable-static=no}.
+
+      \item After installation, you may need to set the environment
+        variable \verb/LD_LIBRARY_PATH/ to where the OpenFST libraries
+        are. % (on the ugrad machines, it's \texttt{/usr/local/lib/fst}).
+      \end{itemize}
+
+    \item Download and install Thrax:
+      \\ \url{http://www.openfst.org/twiki/bin/view/GRM/ThraxDownload}
+
+    \item Download and install NGram:
+      \\ \url{http://www.openfst.org/twiki/bin/view/GRM/NGramDownload}
+
+    \item To view drawings of FSMs, download and install graphviz:
+      \\ \url{http://www.graphviz.org/Download.php}.
+      \\ On Linux systems, you
+      can just do {\tt sudo apt-get install graphviz}.
+
+    \item Download a copy of the assignment directory \texttt{hw-ofst},
+      either from the ugrad
+      network\footnote{\label{fn:hw-ofst}\texttt{/usr/local/data/cs465/hw-ofst/}.  You
+        can copy this directory to your local machine or symlink to it on \texttt{ugrad}.}
+    \end{enumerate}
+
+
+
+  \item Look in the \texttt{hw-ofst} directory.$^{\ref{fn:hw-ofst}}$
+    Our scripts are in the {\tt bin} subdirectory, which you should
+    probably add to your {\tt PATH} so that you can execute these
+    scripts without saying where they live.  Run the following
+    command (with the \texttt{bash} shell) 
+    (and maybe put it in your {\tt \textasciitilde{}/.bashrc} so that it will be
+    executed automatically next time you log in).
+\begin{verbatim}
+export PATH=${PATH}:/usr/local/data/cs465/hw-ofst/bin
+\end{verbatim}
+
+  \item We've given you a script \texttt{grmtest} to help streamline
+    the compilation and testing of Thrax code. Its usage is:
+
+    \begin{center}
+	\begin{verbatim}
+	grmtest <grm file> <transducer_name> [max number output lines]
+	\end{verbatim}
+	\end{center}
+
+    This script compiles the specified \texttt{.grm} file into a
+    \texttt{.far} file (using a makefile produced by {\tt thraxmakedep}),
+    and then passes the standard input through the
+    input through the exported FST named by\\ \verb/<transducer_name>/.  You'll get to try it out below.
+
+    \textcolor{gray}{{\em Warning:} If the output string is the empty string
+    $\epsilon$, then for some reason {\tt grmtest} skips printing it.
+    This seems to be a bug in {\tt thraxrewritetester}, which {\tt
+      grmtest} calls.  Just be aware of it.}
+
+\begin{enumerate}
+
+\item\label{q:binary} Now get to know Thrax.  We highly
+  recommend looking through the online
+  manual\footnote{\url{http://www.openfst.org/twiki/bin/view/GRM/ThraxQuickTour}}
+  and perhaps the commented examples that come with
+  Thrax.\footnote{\texttt{/usr/local/share/thrax/grammars/} on the
+    ugrad or grad machines.}  The following tutorial leads you through
+  some of the basic FSM operations you can do in Thrax.
+  \begin{enumerate}
+  \item Let's first define some simple FSMs over a binary alphabet. Type the following declarations into a new file \texttt{binary.grm}.
+    \begin{center}
+	\begin{verbatim}
+	Zero = "0";
+	One = "1";
+	Bit = Zero | One;
+	export First = Optimize[Zero Zero* Bit* One One One One?];
+	\end{verbatim}
+    \end{center}
+    This defines four named FSMs using Thrax's regular expression
+    syntax
+    (\url{http://www.openfst.org/twiki/bin/view/GRM/ThraxQuickTour#Standard_Library_Functions_Opera}).\footnote{Whereas
+      XFST defines many special infix operators, Thrax instead
+      writes most operators (and all user-defined functions) using
+      the standard form \texttt{Function[arguments]}.  Thrax uses
+      square brackets \texttt{[]} for these function calls, and
+      parentheses \texttt{()} for grouping.  Optionality is
+      denoted with \texttt{?} and composition with \texttt{\atsign}.
+      There is apparently no way to write a wildcard that means
+      ``any symbol''---you need to define \texttt{Sigma =
+        "a"|"b"|"c"|...} and then you can use \texttt{Sigma}
+      within other regular expressions.} Each definition ends in a
+    semicolon.  The first and second FSMs accept only the strings
+    \texttt{0} and \texttt{1}, respectively.  The third defines
+    our entire alphabet, and hence accepts either \texttt{0} or
+    \texttt{1}. The fourth accepts some subset of
+    $\texttt{Bit}*$.
+
+    We can compile this collection of named FSMs into a
+    \textbf{f}st \textbf{ar}chive (a ``\texttt{.far} file'').
+    More precisely, the archive provides only the FSMs that have
+    been marked with an {\tt export} declaration; so here {\tt
+      Zero}, {\tt One}, and {\tt Bit} are just intermediate
+    variables that help define the exported FSM {\tt First}.
+    % The archive also contains some other information that we'll make use of later.
+
+    \begin{enumerate}
+
+    \item Try compiling and running it using our \texttt{grmtest} script:
+      \begin{center}
+	\begin{verbatim}
+	$ grmtest binary.grm First
+	[compiler messages appear here]
+	Input string: [type your input here]
+	\end{verbatim}
+      \end{center}
+
+      The FSA \texttt{First} is interpreted as the identity FST on
+      the corresponding language.  So entering an input string will
+      transduce it to itself if it is in that language, and
+      otherwise will fail to transduce.  Type {\tt Ctrl-D} to quit.
+
+      You'll get an error if you try running \texttt{grmtest
+        binary.grm Zero}, because {\tt Zero} wasn't exported.
+      % See if you can fix the error and try again.
+
+    \item \handin What language does \texttt{First} accept (describe it in
+      English)?  Why are \texttt{0} and \texttt{1} quoted in the {\tt .grm} file?
+
+    \item Let's get information about \texttt{First}. First, we
+      need to extract the FSA \texttt{First} from the FST
+      archive:\footnote{Use \texttt{far2fst binary.far} to extract
+        {\em all} exported FSTs, or \texttt{far2fst binary.far
+          First Second} to extract multiple ones that you specify.}
+
+	\begin{verbatim}
+	$ far2fst binary.far First
+	\end{verbatim}
+      Now use the \texttt{fstinfo} shell
+      command\footnote{\url{http://man.sourcentral.org/f14/1+fstinfo}}
+      to analyze \texttt{First.fst}:
+	\begin{verbatim}
+	$ fstinfo First.fst
+	\end{verbatim}
+      \handin Look over this output: how many states are there? How many
+      arcs?
+
+    \item \label{q:fstview}
+      Optionally, look at a drawing of First (as an identity
+      transducer over the alphabet $\{{\tt 0},{\tt 1}\}$):
+	\begin{verbatim}
+	$ fstview First.fst
+	\end{verbatim}
+      Note that \texttt{fstview} is a wrapper script that we are
+      providing for you.\footnote{After printing \texttt{fstinfo}, it
+        calls \texttt{fstdraw} to produce a logical description of
+        the drawing, then makes the drawing using the Graphviz
+        package's \texttt{dot} command, and finally displays the
+        drawing using {\tt evince}.  Each of these commands has
+        many tweakable options.  What if you're running on your
+        own machine and don't have {\tt evince}?  Then edit the
+        {\tt fstview} script to use a different PDF viewer such as
+        {\tt xreader}, {\tt atril}, {\tt xpdf}, or {\tt acroread}.}  The picture
+      will take a few seconds to appear if the graphics pixels are
+      being sent over a remote X connection.\footnote{If you start
+        getting ``can't open display'' errors, then try connecting
+        via \texttt{ssh -Y} instead of \texttt{ssh -X}.  An
+        alternative is to copy the (small) {\tt .pdf} file to your
+        local machine and use your local image viewer. Mac users might also like the free remote file browser Cyberduck.}
+    \end{enumerate}
+
+  \item Now let's look at equivalent ways of describing the same language.
+    \begin{enumerate}
+    \item Can you find a more concise way of defining \texttt{First}'s
+      language? Add it to {\tt binary.grm} as a new regexp \texttt{Second}, 
+      of the form
+	\begin{verbatim}
+	export Second = Optimize[ ...fill something in here... ];
+	\end{verbatim}
+
+      Run {\tt grmtest} to check that {\tt First} and {\tt Second}
+      seem to behave the same on some inputs.
+
+    \item Here's how to check that {\tt First} and {\tt Second}
+      really act the same on {\em all possible inputs}---that they
+      define the same language:
+	\begin{verbatim}
+	export Disagreements = Optimize[ (First - Second) | (Second - First) ];
+	\end{verbatim}
+
+      \handin If {\tt First} and {\tt Second} are equivalent, then what
+      strings should {\tt Disagreements} accept?
+
+      To check that, run {\tt fstinfo} on {\tt Disagreements.fst}.  From the
+      output, can you conclude that {\tt First} and {\tt Second}
+      must be equivalent? \handin 
+
+      \begin{quote}\small
+        {\em Note:} The \texttt{fstequal} utility is another way to check:
+	\begin{verbatim}
+	if fstequal First.fst Second.fst; then echo same; else echo different; fi
+	\end{verbatim}
+        One way to program \texttt{fstequal} would be to construct the {\tt
+          Disagreements} FSA.
+      \end{quote}
+    \end{enumerate}
+
+  \item You might have wondered about those {\tt Optimize[~...~]}
+    functions. The Thrax documentation notes that {\tt Optimize}
+    \begin{quote}\small
+      \ldots involves a combination of removing epsilon arcs,
+      summing arc weights, and {\bf determinizing and minimizing} the
+      machine \ldots  [Details are 
+\href{http://www.openfst.org/twiki/bin/view/GRM/PyniniOptimizeDoc}{here}.]
+    \end{quote}
+
+    To find out what difference that made, make a new file {\tt
+      binary-unopt.grm} that is a copy of {\tt binary.grm} with
+    the {\tt Optimize} functions {\em removed}.  Then try:
+	\begin{verbatim}
+	grmtest binary-unopt.grm First   # and type Ctrl-D to exit
+	far2fst binary-unopt.far
+	fstview First.fst Second.fst Disagreements.fst
+	\end{verbatim}
+
+    Questions:
+
+    \begin{enumerate}
+    \item Although {\tt First} and {\tt Second} may be equal,
+      their unoptimized FSMs have different sizes and different
+      topologies, reflecting the different regular expressions
+      that they were compiled from.  \handin How big is each one?
+
+    \item The drawing of the unoptimized {\tt Disagreements.fst}
+      shows that it immediately branches at the start state into
+      two separate sub-FSAs.  \handin Why?  ({\em Hint:} Look back at the
+      regexp that defined {\tt Disagreements}.)
+
+    \item Now test some sample inputs with
+	\begin{verbatim}
+	grmtest binary-unopt.grm First
+	\end{verbatim}
+      \handin How are the results different from the optimized version?
+      Why?
+    \end{enumerate}
+
+  \item You may not want to call {\tt Optimize} on every machine
+    or regular sub-expression.  The documentation offers the
+    following warning:
+    \begin{quote}\small
+      When using composition, it is often a good idea to call {\tt
+        Optimize[]} on the arguments; some compositions can be
+      massively sped up via argument optimization. However, calling
+      {\tt Optimize[]} across the board (which one can do via the flag
+      {\tt --optimize\_all\_fsts}) often results in redundant work and
+      can slow down compilation speeds on the whole. Judicious use of
+      optimization is a bit of a black art.
+    \end{quote}
+
+    \handin If you optimize {\tt Disagreements} {\em without} first
+    optimizing {\tt First} and {\tt Second}, what do you get and
+    why?
+  \end{enumerate}
+
+
+\item\label{q:binary-harder} Now try some slightly harder examples. Extend your {\tt binary.grm}
+  to also export FSAs for the following languages.  (You are welcome to
+  define helper FSAs beyond these.)
+
+  \begin{enumerate}
+  \item \texttt{Triplets}: Binary strings where \texttt{1} only occurs in
+    groups of three or more, such as \texttt{000000} and\\
+    \texttt{0011100001110001111111}.
+  \item \texttt{NotPillars}: All binary strings {\em except} for
+    even-length strings of \texttt{1}'s: $\epsilon$,
+    \texttt{11}, \texttt{1111}, \texttt{111111},
+    \texttt{11111111}, $\ldots$ (These correspond to binary
+    numbers of the form $2^{2k}-1$ written in standard form.)
+    Some strings that {\em are} in this language are \texttt{0},
+    \texttt{1}, \texttt{000011}, \texttt{111}, \texttt{0101},
+    \texttt{011110}.
+  \item \texttt{Oddlets}: Binary strings where \texttt{1}'s only
+    appear in groups of odd length.  Careful testing this one!
+    (Note that \texttt{0000} is in this language, because \texttt{1}'s
+    don't appear in it at all.)
+
+  \end{enumerate}
+\end{enumerate}
+
+\noindent You will extend {\tt binary.grm} further in question \ref{q:binary-evenmore}.
+
+\begin{enumerate}[resume]
+\item \label{q:introducefst} So far we have only constructed
+  FSAs.  But Thrax also allows FSTs.  Create a new file {\tt
+    rewrite.grm} in which you will define some FSTs for this
+  question and the next question.
+
+  Complicated FSTs can be built up from simpler ones by
+  concatenation, union, composition, and so on.  But where do you
+  get some FSTs to start with?  You need
+  the built-in \texttt{:} operator:
+	\begin{verbatim}
+	input : output
+	\end{verbatim}
+  which gives the cross-product of the input and output languages.
+
+  In addition, any FSA also behaves as the identity FST on its
+  language.
+
+  Place the following definition into {\tt rewrite.grm}:
+	\begin{verbatim}
+	export Cross = "a" (("b":"x")* | ("c"+ : "y"*) | ("":"fric")) "a";
+	\end{verbatim}
+  Note that {\tt ""} denotes the empty string $\epsilon$.
+  \begin{enumerate}
+  \item \handin What is the input language of this relation (answer with an
+    ordinary regexp)?
+  \item \handin Give inputs that are mapped by {\tt Cross} to 0 outputs, 1
+    output, 2 outputs, and more than 2 outputs.
+  \item How would you describe the {\tt Cross} relation in English?
+    (You do not have to hand in an answer for this, but at least think
+    about it.)
+  \item \handin Make an {\tt Optimize}d version of {\tt Cross} and look at
+    it with {\tt fstview}.  Is it consistent with your answers
+    above? How many states and arcs?
+  \end{enumerate}
+
+  Check your answers by transducing some inputs,
+  using the following commands:
+	\begin{verbatim}
+	grmtest rewrite.grm Cross
+	grmtest rewrite.grm Cross 3
+	\end{verbatim}
+  The second version of the command limits the number of outputs
+  that are printed for each input that you enter.
+
+\item \label{q:rewrite-cd} If you have a simple FST, {\em T}, then you can make a more
+  complicated one using {\bf context-dependent rewriting}.
+  Thrax's {\tt CDRewrite} operator is similar to the {\tt ->}
+  operator in XFST.  It applies {\em T} ``everywhere it can'' within
+  the input string, until there are no unreplaced substrings that
+  could have been replaced.  The following shows schematically how two
+  substrings of \rule{0.5in}{5pt} might be replaced:
+
+  $$\begin{array}{l}
+    \overrule{1.25in}{5pt}{contains no replaceable substring}
+    \overrule{1in}{5pt}{transduce using $T$}
+    \overrule{0.75in}{5pt}{contains no replaceable substring}
+    \overrule{1.5in}{5pt}{transduce using $T$}
+    \overrule{0.75in}{5pt}{contains no replaceable substring}
+    \\
+    \rule{0.45in}{0pt}
+    \underrule{0.8in}{0pt}{matches {\em Left}}
+    \underrule{1in}{0pt}{matches input language of $T$}
+    \underrule{1.5in}{0pt}{matches {\em Right}}
+    \\
+    \rule{1in}{0pt}
+    \underrule{2in}{0pt}{matches {\em Left}}
+    \underrule{1.5in}{0pt}{matches input language of $T$}
+    \underrule{0.5in}{0pt}{matches {\em Right}} \\
+  \end{array}$$
+
+  The braces underneath the string show that each of the 2 replaced
+  substrings appears in an appropriate context---immediately between
+  some substring that matches {\em Left} and some substring that matches
+  {\em Right}.  The 2 replaced substrings are not allowed to
+  overlap, but the contexts can overlap with the replaced substrings
+  and with one another, as shown in the picture.\footnote{If you are wondering how this is
+    accomplished, have a look at
+    \href{http://aclweb.org/anthology/P/P96/P96-1031.pdf}{Mohri \&
+      Sproat (1996)}, section 3.1.}
+
+  If you want to require that the {\em maximal} substring to the
+  left matches {\em Left}, then start {\em Left} with the special
+  symbol {\tt [BOS]}, which can only match at the beginning of the
+  string.  Similarly for {\em Right} and {\tt [EOS]} (end of string).
+
+  The above example shows only one way of dividing up the input
+  string into regions that are transduced by $T$ and regions that
+  are left alone.  If there are other ways of dividing up this input
+  string, then the rewrite transducer will try them too---so it will
+  map this input to multiple outputs.\footnote{So there is no notion
+    here of selecting the regions to transduce in some deterministic
+    way, such as the left-to-right longest match used by the XFST
+    \texttt{\atsign->} operator.}
+
+  \texttt{CDRewrite[{\em T}, {\em Left}, {\em Right}, {\em
+      Any}, {\em Dir}, {\em Force}]} specifies a rewrite
+  transducer with arguments
+
+  \begin{itemize}
+  \item \texttt{\em T} : any FST
+  \item \texttt{\em Left},\ \texttt{\em Right} : unweighted FSAs
+    describing the left and right contexts in which T should be
+    applied.  They may contain the special symbols {\tt "[BOS]"} and
+    {\tt "[EOS]"}, respectively.  (These symbols are only to be used
+    when describing contexts, as in these arguments to
+    \texttt{CDRewrite}, which interprets them specially.  They do {\em not} appear in the symbol
+    table.)
+  \item \texttt{\em Any} : a minimized FSA for $\Sigma^*$,
+    where $\Sigma$ is the alphabet of input and output
+    characters.\NoteJE{must \texttt{\em T} have identical input and
+      output alphabets?}
+    The FST produced by CDRewrite will only allow input or output
+    strings that are in \texttt{\em Any}, so be carefu!l
+  \item \texttt{\em Dir} : the direction of replacement.
+    \begin{itemize}
+    \item {\tt 'sim'} specifies ``simultaneous transduction'':
+      \texttt{\em Left} and \texttt{\em Right} are matched
+      against the original input string.  So all the substrings
+      to replace are identified first, and then they are
+      all transduced in parallel.
+    \item {\tt 'ltr'} says to perform replacements ``in
+      left-to-right order.''  A substring should be replaced if
+      \texttt{\em Left} matches its left context {\em after} any
+      replacements to the left have been done, and \texttt{\em
+        Right} matches its right context {\em before} any
+      replacements to the right have been done.
+    \item {\tt 'rtl'} uses ``right-to-left'' order, the
+      other way around.
+    \end{itemize}
+  \item \texttt{\em Force} : how aggressive to be in replacement?
+    \begin{itemize}
+    \item {\tt 'obl'} (``obligatory,'' like {\tt ->} in XFST) says that the {\em
+        unreplaced} regions may not contain any more replaceable
+      substrings, as illustrated above.  That is, they may not
+      contain a substring that matches the input language of
+      \texttt{\em T}
+      and which falls between substrings that match
+      \texttt{\em Left} and \texttt{\em Right}.
+    \item \texttt{'opt'} (``optional,'' like {\tt (->)} in XFST)
+      says it's okay to leave replaceable substrings
+      unreplaced.  Since the rewrite transducer has the freedom to
+      replace them or not, it typically has even more outputs per
+      input.
+    \end{itemize}
+  \end{itemize}
+
+  Define the following FSTs in your {\tt rewrite.grm}, and test them
+  out with {\tt grmtest}:
+  \begin{enumerate}
+  \item \texttt{BitFlip1}: Given a string of bits, changes every
+    \texttt{1} to \texttt{0} and every \texttt{0} to \texttt{1}.
+    This is called the ``1's complement'' of the input string.
+    Define this  {\em without} using {\tt CDRewrite}.
+
+  \item \texttt{BitFlip2}: Like \texttt{BitFlip1}, but now it should
+    work on any string of digits (e.g., transducing {\tt 1123401} to
+    {\tt 0023410}).  Define this version using {\tt CDRewrite}.
+
+    {\em Hint:} The \texttt{\em Any} argument in this case should be
+    {\tt Digit*} where
+	\begin{verbatim}
+	Bit = "0" | "1";
+	Digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
+	\end{verbatim}
+    % You might enjoy experimenting with the arguments some more.
+
+  \item \texttt{Parity1}: Transduces even binary numbers to {\tt 0}
+    and odd binary numbers to {\tt 1}.  Write this one {\em without}
+    using {\tt CDRewrite}.
+
+    It's always good to think through the unusual cases.  Some
+    people think the empty string $\epsilon$ is a valid binary
+    number (representing 0), while others don't.  \handin What does your
+    transducer think?
+
+  \item \texttt{Parity2}: Same thing as \texttt{Parity1}, but use
+    the \texttt{Reverse} function in your definition.  So
+    start by writing a tranducer that keeps the {\em first} bit
+    of its input instead of the {\em last} bit.
+
+  \item \texttt{Parity3}: Same thing as \texttt{Parity1}, but this
+    use \texttt{CDRewrite} in your definition.
+
+    \handin What does this transducer think about $\epsilon$?
+
+    \textit{Hint:} You may find it helpful to use \texttt{[BOS]} and
+    \texttt{[EOS]}, or the composition operator \texttt{\atsign}.
+
+  \item \texttt{UnParity}: Define this as \texttt{Invert[Parity3]}.
+    \handin What does it do?
+
+  \item \texttt{Split}: Split up a binary string by
+    nondeterministically inserting spaces into the middle, so that
+    input {\tt 0011} maps to the eight outputs $$\{\texttt{0011},\;\;\;
+    \texttt{001~1},\;\;\; \texttt{00~11},\;\;\; \texttt{00~1~1 },\;\;\;
+    \texttt{0~011},\;\;\; \texttt{0~01~1},\;\;\; \texttt{0~0~11},\;\;\;
+    \texttt{0~0~1~1}\}$$
+
+    {\em Hint:} Use \verb|CDRewrite["":" ",|\ldots\verb|]| and
+    figure out the other arguments.
+
+  \item \handinec {\bf Extra credit:} \texttt{SplitThree}: Similar to {\tt Split}, but always
+    splits the input string into exactly three (nonempty) binary
+    strings.  This will produce multiple outputs for strings longer
+    than 3 bits, and no outputs for strings shorter than 3 bits.
+
+    {\em Hint:} Compose {\tt Split} with something else.
+    The composition operator is \texttt{\atsign}.
+
+
+  \end{enumerate}
+
+\item \label{q:np} \textcolor{gray}{Bit strings are great, but let's move to
+  natural language.  You know from HW1 that precisely
+  describing syntax can be challenging, and from HW4 that
+  recovering the full parse of a sentence can be slow.  So, what if you
+  just want a quick finite-state method for finding simple NPs in a
+  sentence?  This could be useful for indexing text for search
+  engines, or as a preprocessing step that speeds up subsequent
+  parsing.  Or it could be part of a cascade of FSTs that do
+  information extraction (e.g., if you want to know who manufactures
+  what in this world, you could scan the web for phrases like ``$X$
+  manufactures $Y$'' where $X$ and $Y$ are NPs).}
+
+  \textcolor{gray}{Identifying interesting substrings of a sentence is called
+  ``chunking.''  It is simpler than parsing because the ``chunks'' are
+  not nested recursively.  This tutorial question will lead you
+  through building an FST that does simple NP chunking.}
+  % The regular expression that specifies the FST is like a simple
+  % grammar for NPs.  The FST takes a part-of-speech tag sequence as
+  % input.
+
+  We will assume that the input sentence has already been tagged
+  (perhaps by a tagging FST, which you could compose with this
+  chunking FST).  You'll build the following objects:
+  \begin{itemize}
+
+  \item An FSA that accepts simple noun phrases: an optional
+    determiner, followed by zero or more adjectives \texttt{Adj},
+    followed by one or more nouns \texttt{Noun}.  This will match a
+    ``base'' NP such as {\tt the ghastly orange tie}, or {\tt
+      Mexico}---though not the {\em recursive} NP {\tt the ghastly orange
+      tie from Mexico that I never wear}.
+
+    The regexp defining this FSA is a kind of simple grammar.  To make
+    things slightly more interesting, we suppose that the input has
+    two kinds of determiners: quantifiers (e.g., {\tt every}) are
+    tagged with \texttt{Quant} whereas articles (e.g., {\tt the}) are
+    tagged with \texttt{Art}
+
+  \item A transducer that matches exactly the same input as the
+    previous regular expression, and outputs a {\em transformed}
+    version where non-final \texttt{Noun} tags are replaced by
+    \texttt{Nmod} (``nominal modifier'') tags. For example, it would map
+    the input \texttt{Adj Noun Noun Noun} deterministically to
+    \texttt{Adj Nmod Nmod Noun} (as in {\tt delicious peanut butter
+      filling}).  It would map the input \texttt{Adj} to no outputs at
+    all, since that input is not a noun phrase and therefore does not
+    allow even one accepting path.
+
+  \item A transducer that reads an arbitrary input string and outputs
+    a single version where all the {\em maximal} noun phrases (chosen
+    greedily from left to right) have been transformed as above and
+    bracketed.
+
+
+  \end{itemize}
+
+
+  \begin{enumerate}
+  \item \label{q:nounphrase}
+
+    You'll be editing the provided file \texttt{chunker.grm}:
+	\begin{verbatim}
+	import 'byte.grm' as bytelib;
+	import 'tags.grm' as tags;
+	Sigma = (tags.Tags) | (bytelib.kBytes);
+	SigmaStar = Optimize[Sigma*];
+	\end{verbatim}
+    Copy this file along with {\tt byte.grm} and {\tt tags.grm} from
+    the {\tt grammars/} directory.  Line 2 defines \texttt{tags} to be
+    the collection of FSMs that are \texttt{export}ed by {\tt tags.grm}.
+    Expressions like \texttt{tags.Tags} in line 3 then refer to
+    individual FSMs in that collection.  You should look at these
+    other files referenced by lines 1--2.  Now:
+    \begin{enumerate}
+    \item \label{q:defNP}\label{q:shouldusesyms} Define an FSA \texttt{NP} that accepts an optional article (\texttt{Art}) or quantifier (\texttt{Quant}); followed by an arbitrary number of adjectives (\texttt{Adj}); followed by at least one noun (\texttt{Noun}). We would like to write:
+	\begin{verbatim}
+	export NP = Optimize[(Art|Quant)? Adj* Noun+];
+	\end{verbatim}
+      \handin What goes wrong?  (\textit{Hint:} look at importable FSMs from
+      \texttt{tags}.)  Fix the definition in {\tt chunker.grm}, and
+      in your {\tt README}, \handin provide evidence of what you were able to
+      accept.
+
+      You will use the fixed {\tt chunker.grm} for the rest of this question.
+
+      (\textit{Note}: Really we should be working over the alphabet of
+      tags rather than the default alphabet of ASCII characters.
+      Later in the assignment we'll see how to define other alphabets
+      using \textit{symbol tables}.)
+
+    \item Have a look at \texttt{NP}:
+	\begin{verbatim}
+	far2fst chunker.far NP
+	fstview NP.fst
+	\end{verbatim}
+      \handin How many states and arcs are there?  Comment on the structure of
+      the machine.
+    \end{enumerate}
+
+
+  \item In a noun-noun compound, such as {\tt the old meat packing
+      district}, the nouns {\tt meat} and {\tt packing} act as {\em
+      nominal modifiers}.  Define and try out a transducer
+    \texttt{MakeNmod}, using \texttt{CDRewrite}, that replaces
+    \texttt{Noun} with \texttt{Nmod} immediately before any
+    \texttt{Noun}.  So {\tt ArtAdjNounNounNoun} as in the example
+    becomes {\tt ArtAdjNmodNmodNoun}.
+
+    % \begin{tabular}{ll}
+    %   \verb/define MakeNmod  Noun -> Nmod || _ Noun ;/ \\
+    %   \texttt{push MakeNmod} \\
+    %   \texttt{down FooBarNounBazNounNounBingNounNounNounNoun}
+    % \end{tabular}
+
+    To define {\tt MakeNmod}, you'll need to figure out what arguments
+    to use to {\tt CDRewrite}.
+
+  \item \label{q:transformnp} Now define an FST
+\begin{verbatim}
+	export TransformNP = Optimize[NP @ MakeNmod];
+\end{verbatim}
+    \begin{enumerate}
+    \item \handin Describe in words what this composition is doing.
+    \item \handin What are the results on \texttt{ArtAdjNounNounNoun} and
+      \texttt{AdjNounNounNounVerb}?
+    \item \handin What is the size of {\tt TransformNP} compared to {\tt
+        MakeNmod}?
+    \item \handin How does the topology of {\tt TransformNP} differ from that
+      of {\tt NP}?
+
+
+    \end{enumerate}
+
+
+  \item \label{q:bracketnp} This FST transduces a noun
+    phrase to one that has {\tt <}angle brackets{\tt >} around it:
+
+    \verb/export BracketNP = ("" : "<") NP ("" : ">");/
+
+    Here the {\tt NP} language is being interpreted as the identity
+    relation on that language, and concatenated with two other simple
+    regular relations.  So {\tt BracketNP} reads $\epsilon$, any
+    \texttt{NP}, $\epsilon$ and writes \verb/</, the same {\tt NP},
+    \verb/>/.
+
+ 
+    \handin What, if anything, is the difference between the following?
+\begin{verbatim}
+	export Brackets1 = Optimize[SigmaStar (BracketNP SigmaStar)*];
+	export Brackets2 = CDRewrite[BracketNP, "", "", SigmaStar,'sim','obl'];
+\end{verbatim}
+    Try them out on short and long strings, such as \texttt{ArtAdj},
+    \texttt{AdjNoun}, \\
+    and \texttt{VerbArtAdjNounNounNounVerbPrepNoun}.
+
+
+  \item\label{q:brackettransform} Now define {\tt
+      BracketTransform} to be like {\tt Brackets2}, except that it
+    should not only bracket noun phrases but also apply the
+    transformation defined by {\tt TransformNP} within each noun
+    phrase.  This should be a fairly simple change.
+
+
+
+  \item One interesting thing about FSTs is that you can pass many
+    strings through an FST at once.  Define {\tt BracketResults} to be
+    the regular language that you get by applying {\tt
+      BracketTransform} to {\em all} strings of the form \texttt{Quant
+      Noun+ Verb} at once.
+
+    ({\em Hint:} Check out the {\tt Project} operator in the Thrax
+    documentation.\footnote{This operator is used to ``project'' a
+      relation onto the upper or lower language, like the {\tt .u} and
+      {\tt .l} operators in XFST.  Why is that called projection?
+      Consider a set of points on the plane: $\{(x_1,y_1), (x_2,y_2),
+      \ldots\}$.  The projection of this set onto the $x$ axis is
+      $\{x_1,x_2\ldots\}$ and the projection onto the $y$ axis is
+      $\{y_1,y_2\ldots\}$.  Same thing when projecting a regular
+      relation, except that each $(x_i,y_i)$ pair is a pair of strings.}
+  You may want to optimize the result.
+
+    You can check the FSA by using {\tt fstview} on {\tt
+      BracketResults} (note that it may be drawn as an identity FST).
+    To print out the strings it accepts (up to a limit), run {\tt
+      grmtest} on the cross-product machine \verb/"":BracketResults/,
+    and enter an empty input string to see all the outputs.
+
+  \item {\bf Extra credit:} To get a sense of how {\tt CDRewrite}
+    might do its work, define your own version of {\tt TransformNP}
+    that does {\em not} use {\tt CDRewrite}.  It should be a
+    composition of three FSTs:
+    \begin{itemize}
+    \item {\em Optionally} replace each {\tt Noun} with {\tt Nmod},
+      without using {\tt CDRewrite}.
+      This will transduce a single input to many outputs.
+    \item {\em Check} that no {\tt Noun} is followed by another {\tt
+        Noun} or {\tt Nmod}.
+      This filters outputs where you didn't replace enough nouns.
+    \item {\em Check} that every {\tt Nmod} is followed by a {\tt
+        Noun} or another {\tt Nmod}.  This filters outputs where you
+      replaced too many nouns.  ({\em Hint:} It is similar to the XFST
+      ``restrict'' operator that we defined in class.)
+    \end{itemize}
+    \handinec Call your version {\tt TransformNP2}.
+
+
+  \end{enumerate}
+
+
+
+\item \label{q:binary-evenmore} In OpenFST, you can define weighted FSMs. By default, OpenFST,
+  NGram and Thrax all use the tropical semiring, $\langle \mathbb{R}
+  \cup \{\pm\infty\}, \oplus=\min, \otimes= +\rangle$.\footnote{And currently a portion of the Thrax we're using supports
+    only this semiring.}  Thus, weights can be interpreted as costs.
+  Concatenating two paths or regexps will {\em sum} their costs,
+  whereas if a string is accepted along two parallel paths or by a
+  union of regexps, then it gets the {\em minimum} of their cost.
+
+  Augment an FSM's definition by appending a weight $w$ in angle
+  brackets, \verb/</ and \verb/>/, and wrapping the entire definition
+  in parentheses.\NoteJE{Next year we could probably replace these
+    questions with some more meaningful ones.  Also, perhaps we should tell
+    them how to use {\tt fstshortestpath} and {\tt fstshortestdistance}.}
+
+  \begin{enumerate}
+  \item 
+    \begin{enumerate}
+    \item \handin What is the minimum-weight string accepted by this FSA,
+        and what is the weight of that string?  (Remember that parentheses in Thrax
+        just represent grouping, not optionality.)
+	\begin{verbatim}
+	(Zero <1>) (Bit+ <0.2>) (One <0.5>)
+	\end{verbatim}
+      \item \handin What is the minimum-weight pair of strings accepted by
+        this FST, and what is the weight of that pair?
+	\begin{verbatim}
+	(Zero : One <1>) (Bit+ <0.2>) (One : One One <0.75>)
+	\end{verbatim}
+      \end{enumerate}
+
+    \item In your old {\tt binary.grm} file, define a weighted
+      transducer \texttt{WFlip} that accepts the language of the above
+      FSA and, reading left to right:
+    \begin{itemize}
+    \item Nondeterministically flips the leftmost bit. Flipping has weight 2, while not flipping has weight 1.
+    \item In the \texttt{Bit+} portion, replaces every \texttt{0} with \texttt{01} (at cost 0.5), and replaces every \texttt{1} with \texttt{0} (at cost 0.4).
+    \item Accepts the final \texttt{1} bit with weight 0.5.
+    \end{itemize}
+    Don't use {\tt CDRewrite} here.
+
+    For example, \texttt{WFlip} should produce the following:
+	\begin{verbatim}
+	Input string: 0011
+	Output string: 00101 <cost=2.4>
+	Output string: 10101 <cost=3.4>
+	\end{verbatim}
+
+  \item Now let's consider cases where we aggregate the weights of
+    multiple paths using $\oplus$.
+
+
+    \begin{enumerate}
+
+    \item In your {\tt README}, \handin name any two binary strings $x,y$: for
+      example, $(x,y)=(\texttt{00},\texttt{1})$.  In {\tt binary.grm},
+      define \texttt{WeightedMultipath} to be a simple {\em weighted}
+      FST of your choice, such that the particular pair $(x,y)$ that
+      you named will be accepted along at least two different paths,
+      of different weights.
+
+      To confirm that these two accepting paths exist, view a drawing
+      of the machine, and use {\tt grmtest} to find out what $x$ maps
+      to.  \handin What are the weights of these paths?
+
+    \item Now define {\tt WeightedMultipathOpt =
+        Optimize[WeightedMultipath]}.  In this FST, \handin how many paths
+      accept $(x,y)$ and what are their weights?  Why?
+
+    \item Suppose {\tt T} is an FST with weights in some semiring, and
+      {\tt x} and {\tt y} are strings.  So {\tt T} accepts the pair
+      $(\texttt{x}, \texttt{y})$ along 0 or more weighted paths.
+
+      \handin Describe, in English, what the following weighted languages or
+      relations tell you about {\tt T}:
+	\begin{verbatim}
+	T_out      = Project[     T,     'output'];  # erases input from T
+	xT_out     = Project[ x @ T,     'output'];  # erases input x from x @ T
+	Ty_in      = Project[     T @ y, 'input'];   # erases output y from T @ y
+	xTy        =      x @ T @ y;
+	exTye      = ("":x) @ T @ (y:"");  # erases input x & output y from x @ T @ y
+
+	xT_out_opt = Optimize[xT_out];
+	Ty_in_opt  = Optimize[Ty_in];
+	exTye_opt  = Optimize[exTye];
+	\end{verbatim}
+      \handin How big is the last FSM, in general?  \handin Why do the last three FSMs
+      have practical importance?\footnote{In general, one might want
+        to do one of these computations for many different {\tt x} (or
+        {\tt y}) values.  Rather than compiling a new Thrax file for
+        each {\tt x} value, you could use other means to create {\tt
+          x} at runtime and combine it with {\tt T}.  For example, to
+        work with {\tt BracketTransform} from
+        question~\ref{q:brackettransform}, try typing this
+        pipeline at the command line: \texttt{echo "ArtNounNounNoun" |
+          fstcompilestring | fstcompose - BracketTransform.fst |
+          fstproject --project\_output | fstoptimize | fstview}.
+        (Other handy utilities discussed in this handout are {\tt
+          fstrandgen} for getting random paths, {\tt fstshortestpath}
+        for getting the lowest-cost paths, {\tt farprintstrings} for
+        printing strings from these paths, and our {\tt grmfilter}
+        script for transducing a file.)  Or you could just use the C++
+        API to OpenFST.
+
+      }
+
+      You can try these all out for the case where {\tt T} is {\tt
+        WeightedMultipath} and {\tt x} and {\tt y} denote the strings
+      $(x,y)$ you named above.
+
+
+
+    \end{enumerate}
+
+  \item {\bf Extra credit:} \handinec Define an FSM {\tt NoDet} that has no
+    deterministic equivalent.  (Unweighted FSAs can always be
+    determinized, but it turns out that either outputs (FSTs) or
+    weights can make determinization impossible in some cases that
+    have cycles.)
+
+    How will you know you've succeeded?  Because the Thrax compiler
+    will run forever on the line {\tt
+      Determinize[RmEpsilon[NoDet]]}---the determinization step will
+    be building up an infinitely large machine.  ({\tt RmEpsilon}
+    eliminates $\epsilon$ arcs from the FSM, which is the first step
+    of determinization.  Then {\tt Determinize} handles the rest of
+    the construction.)
+  \end{enumerate}
+
+
+\item \label{q:lm} Throughout the remainder of this assignment,
+  we'll be focused on building noisy-channel decoders, where weighted
+  FSTs really shine. Your observed data $\mathbf{y}$ is assumed to be
+  a distorted version of the ``true'' data $\mathbf{x}$.
+
+  We would like to ``invert'' the
+  distortion as best we can, using Bayes' Theorem.  The most likely
+  value of $\mathbf{x}$ is
+  \begin{equation}\label{eqn:channel}
+    \mathbf{x}^*
+    \;\defeq\; \argmax_{\mathbf{x}} \Pr(\mathbf{x} \mid \mathbf{y})
+    = \argmax_{\mathbf{x}} \Pr(\mathbf{x}, \mathbf{y})
+    = \argmax_{\mathbf{x}}
+    \underbrace{\Pr(\mathbf{x})}_{\textrm{``language model''}}
+    \underbrace{\Pr(\mathbf{y} \mid \mathbf{x})}_{\textrm{``channel model''}}
+  \end{equation}
+
+  In finite-state land, both language and channel models should be
+  easy to represent.  A channel is a weighted FST that can be defined
+  with Thrax, while a language model is a weighted FSA that can be
+  straightforwardly built with the NGram toolkit.\footnote{Language
+    models can't be concisely described with regular expressions: at
+    least, not the standard ones.}  To make even easier to build a
+  language model, we've given you a wrapper script, \texttt{make-lm}:
+
+	\begin{verbatim}
+	make-lm corpus.txt
+	\end{verbatim}
+  By default, this will create a Kneser--Ney back-off trigram language
+  model called \texttt{corpus.fst}.  Every sentence of
+  \texttt{corpus.txt} should be on its own line.
+
+
+  \begin{enumerate}
+  \item Create the default language model for the provided file
+    \texttt{data/entrain.txt}.\NoteJE{why not a much bigger corpus?}
+    \NoteFF{What are the options, without breaking licenses/copyright
+      (e.g., LDC)?} \NoteJE{We might be able to use JHU's license to
+      put LDC materials on the ugrad/grad machines, if they are
+      restricted to students in the class and we explain the terms to
+      the students.  Another option might be Reuters-21578, or
+      something listed at Chris Manning's statnlp page.}  Each line of
+    this file represents an observed sentence from the English
+    training data from the HMM assignment.\footnote{Because the NGram
+      toolkit assumes that sentence boundaries are marked by
+      newlines, we've omitted {\tt \#\#\#}.}  Notice that the sentences
+    have already been tokenized for you (this could be done by another
+    FST, of course).
+
+    You should now have a language model \texttt{entrain.fst} in your
+    working directory, along with two other files you'll need later:
+    \texttt{entrain.alpha} is the alphabet of word types and
+    \texttt{entrain.sym} is a symbol table that assigns internal
+    numbers to them.
+
+
+    Look at the files, and try this:
+	\begin{verbatim}
+	wc -w entrain.txt     # number of training tokens
+	wc -l entrain.alpha   # number of training types
+	fstinfo entrain.fst   # size of the FSA language model
+	\end{verbatim}
+
+  \item The NGram package contains a number of useful shell commands
+    for using FST-based $n$-gram models.  Three that you may find
+    particularly interesting are \texttt{ngramprint},
+    \texttt{ngramrandgen}, and \texttt{ngramperplexity}. You can read
+    up on all three if you like (use the \texttt{--help} flag).
+
+    Sampling several sentences from the language model is easy:
+
+	\begin{verbatim}
+	ngramrandgen --max_sents=5 entrain.fst | farprintstrings
+	\end{verbatim}
+
+    Each \verb/<epsilon>/ represents a backoff decision in the FSM.
+    You can see that there is a {\em lot} of backoff from 2 to 1 to 0
+    words of context.  That's because this corpus is very small by NLP
+    standards: the smoothing method realizes that very few of the
+    possible words in each context have been seen yet.
+
+    To read the sentence more easily, use the flag
+    \verb/--remove_epsilon/ to \texttt{ngramrandgen} (this prevents
+    \verb/<epsilon>/s from being printed).  Alternatively, just use
+    our {\tt fstprintstring} script to print a random output from any
+    FST:
+\begin{verbatim}
+fstprintstring entrain.fst
+\end{verbatim}
+
+    If you want to know the most probable path in the language model,
+    you can use {\tt fstshortestpath}, which runs the Viterbi
+    algorithm.\footnote{In general {\tt fstprintstring} will print a
+      randomly chosen string, but in the output of {\tt
+        fstshortestpath}, there is only one string to choose from.}
+\begin{verbatim}
+fstshortestpath entrain.fst | fstprintstring
+\end{verbatim}
+
+    \handin How long are the strings in both cases, and why?  What do you notice
+    about backoff?
+
+  \item {\bf Recommended:} Although it's a small language model, \texttt{entrain.fst} is
+    far too large to view in its entirety.  To see what a language
+    model FSA looks like, try making a \emph{tiny} corpus,
+    \texttt{tiny-corpus.txt}: just 2--3 sentences of perhaps 5 words
+    each.  Try to reuse some words across sentences.  Build a language
+    model \texttt{tiny-corpus.fst} and then look at it with {\tt
+      fstview}.  There is nothing to hand in for this question.
+
+  \item  \deliverableneeded{} Now, let's actually use the
+    \texttt{entrain.fst} language model. Copy {\tt noisy.grm} from the
+    {\tt grammars/} directory:
+
+	\begin{verbatim}
+	import 'byte.grm' as bytelib;        # load a simple grammar (.grm)
+	export LM = LoadFst['entrain.fst'];  # load trigram language model (.fst)
+	vocab = SymbolTable['entrain.sym'];  # load model's symbol table (.sym)
+	\end{verbatim}
+
+    Each line loads a different kind of external resource.  In
+    particular, the second line loads the trigram language model FSA,
+    and the third line loads the symbol table used by that FSA.  The
+    symbol table consists of the vocabulary of the language model, as
+    well as the OOV symbol {\tt <unk>} (``unknown'').\footnote{The
+      {\tt make-lm} script takes the vocabulary to be all the words
+      that appear in training data, except for a random subset of the
+      singletons.\NoteJE{Good-Turing suggests that it should be all
+        the singletons, at least if training and test data are
+        matched.} \NoteFF{That's a simple enough change to make. I just didn't want to remove \textit{all} singletons because that could limit what people could small-scale test against.}
+	\NoteJE{I understand, and it might be wise to only
+        remove some.  But you {\em don't} want it to be a different
+        random subset for every student, because that will make it
+        hard to grade.}  \NoteFF{I've fixed this. Good catch, thanks!}
+	These singletons are removed from the vocabulary to
+      ensure that some training words will be OOV, allowing the
+      smoother to estimate the probability of OOV in different
+      contexts.  Ideally the smoothing method would figure this out on
+      its own.}
+
+
+
+    You can therefore use {\tt LM} to
+    transduce some strings:
+	\begin{verbatim}
+	grmtest-with-symbols noisy.grm LM entrain.sym entrain.sym
+	\end{verbatim}
+    \handin What is the result of transducing the following?  Explain your
+    answers.  What are the domain and range of the relation {\tt
+      LM}?
+    % cat /tmp/entrain.32416.uniqcedwords | egrep ' (Andy|cherished|the|barrels|each|house|gave|him)$'
+
+    \begin{itemize}
+    \item \tt Andy cherished the barrels each house made .
+    \item \tt If only the reporters had been nice .
+    \item \tt Thank you
+    \end{itemize}
+
+  \end{enumerate}
+
+  We now want to compose {\tt LM} with a noisy channel FST.  Because
+  the language model is nothing more than an FSA, we can use it in
+  Thrax. Of course, we're going to have to be careful about symbol
+  tables: the noisy channel's input alphabet must be the same as {\tt
+    LM}'s output alphabet.
+
+  Remember to be careful when creating FSTs over a nonstandard
+  alphabet. If you write
+\begin{verbatim}
+("barrels barrels" : ("" | "ship"))*;
+\end{verbatim}
+  then the input to this FST must be a multiple of 15 symbols in
+  the default {\tt byte} alphabet.  But if you write
+\begin{verbatim}
+("barrels barrels".vocab : ("".vocab | "ship".vocab))*;
+\end{verbatim}
+  then Thrax will parse the quoted strings using the {\tt vocab} symbol
+  table.  So here, the input must be an even number of symbols
+  in the {\tt vocab} alphabet.
+
+  Writing {\tt "Thank".vocab} will give an error because that word
+  is not in the symbol table (it's not in the file {\tt
+    entrain.sym} from which {\tt vocab} was loaded).
+  % Try writing a few  out using {\tt grmtest-with-symbols}.
+
+  A noisy channel that ``noises up'' some text might modify the
+  sequence of words (over the {\tt vocab} alphabet) or the sequence of
+  letters (over the {\tt byte} alphabet).  If you want to do the
+  latter, you'll need to convert words to letters.  Recall from
+  question \ref{q:introarpa} that the \texttt{StringFile} function
+  interprets its given tab-separated text file as an FST, with the
+  domain and range as the second and third parameters, respectively.
+  So we'll add the following line to \texttt{noisy.grm}:
+\begin{verbatim}
+Spell = Optimize[StringFile['entrain.alpha', vocab, byte]];
+\end{verbatim}
+
+  This maps a word to its spelling, just as {\tt Pronounce} in
+  \ref{q:introarpa} mapped a word to its pronunciation.
+
+  \begin{enumerate}[resume]
+  \item
+    In {\tt noisy.grm}, define a transducer called {\tt
+      CompleteWord} that could be used to help people enter text
+    more quickly.  The input should be the first few characters in a
+    word, such as {\tt barr}.  Each output should be a word that
+    starts with those characters, such as {\tt barrel} or {\tt barrage}.
+
+    Use {\tt LM} to assign a cost to each word, so that each
+    completed word is printed together with its cost.  \handin Is a word's
+    cost equal to the unigram probability of the word, or something
+    else?
+    % Answer: No.  It's the negative log probability that a random
+    % sentence would consist only of that word.
+
+    {\em Hint:} Be careful to think about the input and output
+    alphabets, and to pass them as arguments to {\tt
+      grmtest-with-symbols}.  The input alphabet should be
+    {\tt byte} (not {\tt byte.sym}), as explained in question~\ref{q:byte}.
+
+  \item {\bf Extra credit:}\NoteJE{next year, perhaps shouldn't be
+      extra credit} \handinec Now define {\tt CompleteWordInContext} similarly.
+    Here the input is a sequence---separated by spaces---of 0 or more
+    complete words followed by a partial word.  Each output is a
+    single word that completes the partial word, as before.  But this
+    time the cost depends on the context: that's what language models
+    are for.
+
+    Try it out and \handinec give a few example inputs that illustrate how the
+    context can affect the ranking of the different completions.
+
+    {\em Hint:} You might not able to get away with exporting {\tt
+      CompleteWordInContext} as a single transducer---it's rather big
+    because it spells out the words in the language model.  It will
+    be more efficient to use the pipelining trick from
+    question~\ref{q:pipeline}.  In your {\tt README}, tell the
+    graders what command to enter in order to try out your pipeline,
+    and give the original {\tt CompleteWordInContext} definition that
+    your pipeline was derived from.
+
+
+  \end{enumerate}
+
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\item \label{q:channel} Question \ref{q:lm} defined our language model,
+  $\Pr(\mathbf{x})$.  Now let's compose it with some channel models
+  $\Pr(\mathbf{y}\mid \mathbf{x})$ that we'll define.
+  In this question, we'll practice by working through a simple
+  deterministic noisy channel.
+
+  \begin{enumerate}
+  \item \deliverableneeded{} Still working in {\tt noisy.grm}, define
+    a deterministic transducer \texttt{DelSpaces} that deletes all
+    spaces.  Define this using \texttt{CDRewrite}, and use the
+    alphabet \texttt{bytelib.kGraph | bytelib.kSpace}.  Using {\tt
+      grmtest} you should be able to replicate the following:
+
+\begin{verbatim}
+Input string: If only the reporter had been nice .
+Output string: Ifonlythereporterhadbeennice.
+Input string: Thank you .
+Output string: Thankyou.
+Input string: The reporter said to the city that everyone is killed .
+Output string: Thereportersaidtothecitythateveryoneiskilled.
+\end{verbatim}
+
+  \item \texttt{grmtest} will transduce each string that you type in,
+    providing multiple outputs when they exist.
+    To transduce a whole file to a single output, once you've tested
+    your transducer, we've provided another wrapper script
+    \texttt{grmfilter}:\NoteJE{maybe not necessary to give the full
+      doc output}
+
+    	\begin{verbatim}
+	$ grmfilter
+	Usage:
+	        cat input.txt | grmfilter [-opts] <grammar file> <name1>,<name2>,...
+	-r: select a random path
+	-s: find shortest path (default)
+	-h: print this help message (and exit)
+	\end{verbatim}
+
+    Just like {\tt grmtest}, it takes two required arguments, a {\tt .grm}
+    file and a comma-separated list of FST names defined in that file.
+    It reads strings from the standard input, one per line, and writes
+    their transductions to the standard output.  The output string
+    comes from {\em one} of the paths that accept the
+    input.\NoteJE{what do we do if there are no outputs?} The default
+    (which can be signaled explicitly with the {\tt -s} flag) is to
+    choose a maximum-probability path.  The alternative (the {\tt -r}
+    flag) is to select a path randomly in proportion to its
+    probability.  We know each path's probability because its total
+    cost gives the negative log of its probability.
+
+    Try running \texttt{DelSpaces} on the text file
+    \texttt{data/entest.txt}, which contains the first 50 sentences of
+    the English test data \texttt{entest} from the HMM assignment.
+    Save the result as \texttt{entest-noisy.txt}.  In general, you
+    should use the {\tt -r} flag to pass text through a noisy channel,
+    so that it will randomly noise up the output (although in this
+    introductory case the channel happens to be deterministic):
+
+\begin{verbatim}
+grmfilter -r noisy.grm DelSpaces < entest.txt > entest-noisy.txt
+\end{verbatim}
+
+  \end{enumerate}
+
+  Uh-oh! Someone got into your files and used your own
+  \texttt{DelSpaces} against you! Now how will you ever read any of
+  your files?
+
+  After despairing for a while, you realize that you can just reverse
+  \texttt{DelSpaces}'s actions.  So you try {\tt Invert[DelSpaces]},
+  but unfortunately that turns {\tt Ifonlythereporterhadbeennice.}  back
+  into all kinds of things like
+\begin{verbatim}
+I fon lyt    he reporterh adbeenni  ce.
+\end{verbatim}
+    The correct solution is somewhere in that list of outputs, but you
+    need to find it.  What a perfect opportunity to use your language
+    model {\tt LM} and the Viterbi algorithm for finding the most
+    probable path!
+
+    The idea is that the text actually came from the generative
+    process \eqref{eqn:channel}, which can be represented as the
+    composition
+\begin{verbatim}
+Generate = LM @ DelSpaces;   # almost right!
+\end{verbatim}
+
+    Unfortunately the output of {\tt LM} is words, but the input to
+    {\tt DelSpaces} is characters.  So they won't compose.  You will
+    need to stick a transducer {\tt SpellText} in between.  This
+    transducer represents another deterministic step in the generative
+    process that resulted in the noisy sequence of characters.
+
+    \begin{enumerate}[resume]
+    \item Define {\tt SpellText} in {\tt noisy.grm}.  It should spell
+      the first input word, output a space, spell the second input
+      word, output another space, and so on.  This yields the kind of
+      text that actually appeared in {\tt entrain.txt} (there is a
+      space after each word in a sentence, including the last).
+
+      % SpellText = (Spell ("".vocab:" "))*;
+
+      Now revise your definition of {\tt Generate} to use {\tt
+        SpellText}.
+
+  \item \deliverableneeded{} \label{q:decodecomp}
+    Now you should be able to decode noisy text via
+\begin{verbatim}
+Decode = Invert[Generate];
+\end{verbatim}
+
+    Unfortunately, this machine will be too large (and slow to
+    compile). So you should use the same approach as in question
+    \ref{q:rhymecomp}, and ask {\tt grmtest} to pass the noisy
+    text through a sequence of inverted machines.
+
+    {\em Important:} At the end of your sequence of machines, you
+    should add {\tt PrintText}, which you can define for now to be
+    equal to {\tt SpellText}.  This has the effect of pretty-printing
+    the decoded result.  It will turn the recovered sequence of words
+    back into characters, and put spaces between the words.
+
+    Using {\tt grmtest} in this way, try decoding each of the
+    following.  Note that the lowest-cost results are shown first.
+    \handin Discuss the pattern of results, and their costs, in your
+    \verb/README/:
+    \begin{itemize}
+      % one answer
+    \item {\tt Ifonlythereporterhadbeennice.}
+
+      % no answers
+    \item {\tt If only.}
+
+      % many answers
+    \item \texttt{ThereportersaidtothecitythatEveryoneIskilled.}
+
+      % no answers
+    \item {\tt Thankyou.}
+
+    \end{itemize}
+
+  \item The reason \texttt{Thankyou} failed is
+    because we didn't account for OOVs.  The vocabulary has an OOV
+    symbol \verb/<unk>/, but it is treated like any other word in the
+    vocabulary.\footnote{Except by some of the {\tt ngram} utilities
+      that we're not using.}
+    % The utilities we're using,
+    % specifically the NGram library, automatically add an OOV symbol
+    % (\verb/<unk>/) to the symbol table.
+    So {\tt LM} will accept phrases like \texttt{<unk> you}, but not
+    {\tt Thank you}.
+
+    So just as we described how to spell in the above questions, we'll
+    now describe how to spell \texttt{OOV} words. We'll say that
+    \texttt{<unk>} can rewrite as an arbitrarily long sequence of
+    non-space text characters (\texttt{bytelib.kGraph}):
+
+    \medskip
+    \texttt{RandomChar = bytelib.kGraph <4.54>;} \\
+    \texttt{RandomWord = Optimize[(RandomChar (RandomChar <$w_1$>)* ) <$w_2$>];} \\
+    \texttt{SpellOOV = "<unk>".vocab : RandomWord;}
+    \medskip
+
+    The weight in {\tt RandomChar} is saying that each of the 94
+    characters in {\tt bytelib.kGraph} has the same probability,
+    namely $\frac{1}{94}$, since $-\log \frac{1}{94} \approx 4.54$.
+
+    How about {\tt RandomWord}?  When you define it in {\tt
+      noisy.grm}, you'll have to give actual numbers for the numeric
+    weights $w_1$ and $w_2$.  Try setting $w_1=0.1$ and $w_2=2.3$.
+    To check out the results, try these commands:
+\begin{verbatim}
+grmtest noisy.grm RandomWord   # evaluate cost of some strings
+far2fst noisy.far RandomWord   # (get the FSA for commands below)
+fstprintstring RandomWord.fst  # generate a random string
+fstview RandomWord.fst         # look at the FSA
+\end{verbatim}
+
+    \begin{enumerate}
+    \item \handin What do $w_1$ and $w_2$ represent?  Hint: the costs $0.1$
+      and $2.3$ are the negative logs of $0.9$ and $0.1$.
+    % \item What happens as $w_1$ inceases (decreases) as $w_2$
+    %   remains fixed? What about as $w_2$ changes while $w_1$
+    %   remains fixed?
+    \item \handin For each $n \geq 0$, what is the probability $p_n$ that the
+      string generated by {\tt RandomWord} will have length $n$?
+    \item \handin What is the sum of those probabilities, $\sum_{n=0}^\infty
+      p_n$?
+    \item \handin How would you change $w_1$ and $w_2$ to get longer random
+      words on average?
+    \item \handin If you decreased {\em both} $w_1$ and $w_2$, then what would
+      happen to the probabilities of the random words?  How would
+      this affect the behavior of your decoder?  Why?
+    \item \handin How could you improve the probability models {\tt
+        RandomChar} and {\tt RandomWord}?
+    \end{enumerate}
+
+    Once you've answered those questions, {\bf reset
+      $\mathbf{w_1=0.1}$ and $\mathbf{w_2=2.3}$ and proceed.}
+
+  \item Now, revise \texttt{Spell} so that it is not limited to
+    spelling words in the dictionary, but can also randomly spell {\tt <unk>}.  ({\em
+    Hint:} Use {\tt SpellOOV}.)
+
+    Also revise {\tt PrintText} so that if your decoder finds an
+    unknown word {\tt <unk>}, you will be able to print that as the
+    5-character string ``{\tt <unk>}.''
+
+    To check your updated decoder, try running the
+    sentences from question~\ref{q:decodecomp} through it.  Again discuss the pattern of results.
+    Remember that if you want, you can add an extra argument to {\tt
+      grmtest} to limit the number of outputs printed per input.
+
+
+  \item \label{q:qualitativeedit} Remember that your goal was to
+    de-noise your corrupted files, whose spaces were removed by {\tt
+      DelSpaces}.  Just run \verb/grmfilter/ again, but with three
+    differences:
+    \begin{itemize}
+    \item Before, you were converting {\tt entest.txt} to {\tt
+        entest-noisy.txt}.
+      Now you should convert \\{\tt entest-noisy.txt} to {\tt
+        entest-recovered.txt}.
+    \item Instead of running the noisy channel forward, run it
+      backward, using your pipeline from \ref{q:decodecomp}.
+      You can leave out the {\tt PrintText} step of the pipeline
+      since {\tt grmfilter} is a bit smarter than {\tt grmtest} about
+      how it prints outputs.
+    \item Since you want the most likely decoding
+      and not a random decoding, don't use the {\tt -r} flag this time.
+    \end{itemize}
+
+    Look at the results in {\tt entest-recovered.txt}.  \handin What kinds of
+    errors can you spot?  Does this {\em qualitative} error analysis give
+    you any ideas how to improve your decoder?
+
+  \item Suppose you'd like to {\em quantify} your performance.  The metric
+    we'll consider is the {\bf edit distance} between {\tt entest.txt}
+    and {\tt entest-recovered.txt}.
+
+    Edit distance counts the minimum number of edits needed to
+    transduce one string ($x$) into another ($y$). The possible edits
+    are
+    \begin{itemize}
+    \item \textbf{substitute} one letter for another;
+    \item \textbf{insert} a letter;
+    \item \textbf{delete} a letter;
+    \item \textbf{copy} a letter unchanged.
+    \end{itemize}
+
+    Each of these operations has a cost associated with it.  We'll
+    stick with the standard unweighted edit distance metric in which
+    substitions, insertions and deletions all have cost 1; copying a
+    character unchanged has cost 0.  For simplicity we will treat the
+    unknown word symbol as if really were the 5-character word {\tt
+      <unk>}, which must be edited into the true word.
+
+    As you know, edit distance can easily be calculated using weighted
+    finite-state machines:
+
+\begin{verbatim}
+Sigma = bytelib.kBytes;
+export Edit = (Sigma | ((""|Sigma) : (""|Sigma)  <1>) )*;
+\end{verbatim}
+    The {\tt Edit} machine transduces an input string $x$ one byte at
+    a time: at each step, it either passes an input character through
+    with cost 0, or does an insert, delete or substitute with cost 1.
+    That gives an edited version $y$.  The cheapest way to get from
+    $x$ to a given $y$ corresponds to the shortest path through $x$
+    \verb/@ Edit @/ $y$.  As we saw in class, that machine has the
+    form of an $|x+1| \times |y+1|$ grid with horizontal, vertical,
+    and diagonal transitions.  It has exponentially many paths, of
+    various total cost, that represent different sequences of edit
+    operations for turning $x$ into $y$.
+
+    {\bf We've given you an edit distance script} to calculate the
+    edit distances between the corresponding lines of two files:
+
+\begin{verbatim}
+editdist entest.txt entest-recovered.txt
+\end{verbatim}
+
+    This will compare each recovered sentence to the original.  Do the
+    scores match your intuitive, qualitative results from
+    \ref{q:qualitativeedit}?
+
+    Please look at \texttt{grammars/editdist.grm}, the Thrax grammar
+    used by the {\tt editdist} script.  You'll see that it's more
+    complicated than \verb/Edit/, but this construction \textit{reduces}
+    the size of the overall machine by a couple of orders of
+    magnitude.  While it still computes $x$ \verb/Edit/ $y$, it splits
+    \verb/Edit/ up into two separate machines, \verb/Edit1/ and
+    \verb/Edit2/. We still find the shortest path, but now through
+
+    \begin{center}
+      {\tt
+        ($x$ \verb/@/ Edit1) \verb/@/ (Edit2 \verb/@/ $y$);
+      }
+    \end{center}
+
+    By doing the composition this way, both $x$ and $y$ are able to
+    impose their own constraints (what letters actually appear) on
+    \verb/Edit1/ and \verb/Edit2/, thus reducing the size of the
+    intermediate machines.  The resulting FST can be built quite
+    quickly, though as mentioned before, it does have $|x+1| \times
+    |y+1|$ states and a similar number of arcs.
+
+  \item \handinec {\bf Extra credit:} How can you modify your pipeline so that
+    it recovers an appropriate spelling of each unknown word, rather
+    than {\tt <unk>}?  For example, decoding {\tt Thankyou} should
+    give {\tt Thank you} rather than {\tt <unk> you}.\footnote{The
+      recovered spelling is determined by the language model and the
+      channel model.  It won't always match the noisy spelling.  E.g., if the noisy channel tends to change letters into
+      lowercase, then decoding {\tt Thank you} might yield {\tt THANK
+        you}.}
+
+  \end{enumerate}
+
+
+\item \handinec \label{q:channel-ec} {\bf Extra credit (but maybe the real point of this
+    assignment):} Finally, it's time to have some fun.  We just set up
+  a noisy-channel decoder to handle a simple deterministic noisy
+  channel.  Now try it for some other noisy channels!  The framework
+  is nearly identical---just replace {\tt DelSpaces} with some other FST.
+%
+  For each type of noisy channel,
+  \begin{enumerate}[label=\roman*.]
+  \item Define your channel in {\tt noisy.grm} as a weighted FST.
+  \item Explain in {\tt README} what you implemented and why, and how you chose the weights.
+  \item Use your channel to corrupt {\tt entest.txt} into {\tt
+      entest-noisy.txt}.
+  \item Use your inverted channel, the language model, and {\tt
+      SpellText} to decode {\tt entest-noisy.text} back into {\tt
+      entest-recovered.txt}.
+  \item Look at the files and describe in your {\tt README} what
+    happened, with some examples.
+  \item Report the edit distance between {\tt entest.txt} and
+    {\tt entest-recovered.txt}.
+  \end{enumerate}
+
+  Have fun designing some of the channels below.  Each converts a string of
+  bytes into a string of bytes.  In general make them
+  non-deterministic (in contrast to {\tt DelSpaces}), and play with
+  the weights.
+  % Within each machine, how do the different rewrites interact?
+
+  \begin{enumerate}
+  \item {\tt DelSomeSpaces}: Nondeterministically delete none,
+    some, or all spaces from an input string.
+
+
+  \item {\tt DelSuffixes}: Delete various word endings. You may find
+
+      \url{http://grammar.about.com/od/words/a/comsuffixes.htm} helpful.
+
+  \item {\tt Typos}: Introduce common typos or misspellings. You may
+    get some inspiration from \\
+    \url{http://en.wikipedia.org/wiki/Wikipedia:Lists_of_common_misspellings} \\
+    or \\
+    \url{http://en.wikipedia.org/wiki/File:Qwerty.svg}
+
+    Some real-world typos are due to the fact that some words {\em sound}
+    similar, so if you're ambitious, you might be able to make some
+    use of {\tt data/cmudict.txt} or the {\tt Pronounce} transducer.
+
+  \item {\tt Telephone}: Deterministically convert (lower-case)
+    letters to digits from the phone keypad.  For example, {\tt a}
+    rewrites as {\tt 2}.
+
+  \item {\tt Tinyphone}: Compose your {\tt Telephone} FST with another
+    FST that allows common cellphone keypad typos.  For example, there
+    should be a small chance of deleting a digit, doubling a digit, or
+    substituting one of the adjacent digits for it.
+
+
+  \item Try composing some of these machines in various orders.  As usual,
+    give examples of what happens, and discuss the interactions.
+  \end{enumerate}
+
+  Feel free to try additional noisy channels for more extra credit.  You
+  could consider capitalization, punctuation, or something crazy out
+  of your imagination.\footnote{It might be fun to replace each word
+    deterministically with its rhyming ending, using your
+    \texttt{WordEnding} FST from question~\ref{q:wordending}
+    (composed with something that transduces ARPAbet characters to the
+    byte alphabet).  Then your noisy channel decoder will find the
+    highest-probability string that rhymes word-by-word with your
+    original input text.  Should be amusing.}
+
+
+  \begin{comment}
+  \item\label{q:hmm} By now you should be comfortable with weighted
+    FSMs and noisy channel models in Thrax. As your final task,
+    implement Viterbi decoding in HMMs.\footnote{You might want to
+      look back at
+      \url{http://cs.jhu.edu/~jason/465/PDFSlides/lect22-tagging.pdf}}
+    As a final goal, you should be able to run
+
+\begin{verbatim}
+	$ ./make-hmm-lm entrain4k
+	[...]
+	$ ./make-run-hmm HMM words.sym tags.sym 1
+	[...]
+\end{verbatim}
+
+    We've gotten you started with some files and data in the
+    \texttt{hmm} folder:\NoteJE{nope, some are in the tagger/
+      folder and some are in grammars/ etc.}
+    \begin{description}
+    \item[hmm.grm] This is the starter \texttt{grm} file we've given you. You need to complete
+      the three occurrences of \texttt{???}.
+    \item[make-hmm-lm] You probably noticed in \texttt{hmm.grm} that we bring in some files. \texttt{make-hmm-lm.sh} generates the following you need to be concerned with:
+      \begin{description}
+      \item[emit.grm]: A weighted FST encoding the (empirical) emission probabilities
+
+        $p_{tw}\left(w_i\mid t_i\right).$
+      \item[tags.wb2.model]: A bigram, Witten-Bell backoff transition
+        model\NoteJE{is this an fst trained with the ngram package?
+          with what command?} that encodes
+        $p_{tt}\left(t_i\mid t_{i-1}\right).$
+      \item[tags.sym, words.sym]: The symbol tables for the tag and word sequences, respectively.
+      \item[tags.alpha, words.alpha]: A list of all tags and words.
+      \end{description}
+    \item[make-run-hmm.sh]: A script similar to the \texttt{run-pipe-*.sh} scripts you've used before. However, the usage has changed a bit to account for the symbol tables:
+\begin{verbatim}
+	make-run-hmm.sh <hmm grm file> <FSM>
+	                <input symbol table> <output symbol table>
+	                [number output results]
+\end{verbatim}
+
+      As an example, in the command
+
+      \texttt{./make-run-hmm hmm.grm HMM words.sym tags.sym 1}
+
+      we're using the word symbol table as the input table (domain) and the tag symbol table as the output (range) because an HMM transduces from words to tags.
+    \end{description}
+  \end{comment}
+
+
+
+\end{enumerate}
+
+\end{document}

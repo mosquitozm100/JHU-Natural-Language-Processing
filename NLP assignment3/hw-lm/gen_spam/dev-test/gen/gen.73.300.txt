@@ -1,0 +1,1 @@
+SUBJECT: &NAME for the Study of &NAME : Seminar this Thursday Dear All , Come and hear about some of the exciting research that goes on at &NAME , this Thursday 5th June at &NUM pm in the &NAME &NAME Theatre . Speaker : &NAME &NAME . &NAME : ' From pacemakers to hi-fi audio receptors : developmental changes in cochlear inner hair cells . ' Everybody is very welcome . &NAME . 

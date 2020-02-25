@@ -1,0 +1,1 @@
+SUBJECT: &NAME EMAIL Hi &NAME : &CHAR ) ! Keep it real man . See you on Tuesday . Laters , &NAME 

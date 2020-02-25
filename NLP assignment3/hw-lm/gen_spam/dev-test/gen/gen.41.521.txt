@@ -1,0 +1,1 @@
+SUBJECT: &NAME &NAME Hi , &NAME , I sent some email to &NAME &NUM or &NUM weeks ago and not received a reply . I was wondering if you knew how she was . Thanks and best regards , - &CHAR 

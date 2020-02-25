@@ -1,0 +1,1 @@
+SUBJECT: Thanks Hi &NAME , I found the formula for generating the Catalan numbers ( 2n!/n! ( n+1 ) ! ) on the web , and &NAME gives a useful , if brief discussion of the combinatoric explosion of binary parse trees with increasing noun compounds in his article in &NAME 's &NAME &NAME . I very much appreciate your help . Thanks . &NAME 

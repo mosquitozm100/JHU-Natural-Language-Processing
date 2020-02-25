@@ -1,0 +1,1 @@
+SUBJECT: [ &NAME ] anaphora resolution systems &NAME , Does anybody know software products which contain anaphora resolution modules inside ? Or stand-alone anaphora resolution systems of industrial level ? And where can I see them ? Thank you for any information , &NAME 

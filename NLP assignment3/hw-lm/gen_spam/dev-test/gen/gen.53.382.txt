@@ -1,0 +1,1 @@
+SUBJECT: [ &NAME ] I need free data set Dear All , I need a free downloadable ( relatively large ) Corpus containing Part-of-Speech tag sequences and its parse tree ( in form of &NAME &NAME ) . Please inform me where can I get such as this data set . Best &NAME 

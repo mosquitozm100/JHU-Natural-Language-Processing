@@ -1,0 +1,1 @@
+python3 findsim.py words-50_10000.txt king --minus man --plus woman

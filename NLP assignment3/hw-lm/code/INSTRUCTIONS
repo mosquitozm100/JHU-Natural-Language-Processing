@@ -1,0 +1,153 @@
+A version of this Python port for an earlier version of this
+assignment was kindly provided by Eric Perlman, a previous student in
+the NLP class.  Thanks to Prof. Jason Baldridge at U. of Texas for
+updating the code and these instructions when he borrowed the
+assignment.  They were subsequently modified by Xuchen Yao, Mozhi
+Zhang and Chu-Cheng Lin for more recent versions of the assignment.
+The final form was prepared by Arya McCarthy.
+
+----------------------------------------------------------------------
+
+Copy these code files to a private directory of yours, DIR.  
+You can do this as follows:
+
+  mkdir MYDIR
+  cp -p /home/arya/hw-lm/code/* MYDIR
+  cd MYDIR
+
+----------
+
+You probably also want to install Miniconda, a minimal tool
+for managing and reproducing environments. It does the hard
+work of installing packages like NumPy that use faster,
+vectorized math compared to the standard Python int and float
+data types.
+
+Miniconda (and its big sibling Anaconda) are all the rage in
+NLP and deep learning. Install it following your platform-
+specific instructions from here:
+
+    https://conda.io/projects/conda/en/latest/user-guide/install/index.html
+
+One you've installed it, you can create an "environment" that
+matches the one on the autograder, so you instantly know whether
+your code will work there or not.
+
+    conda env create -f /home/arya/hw-lm/code/autograder-3.yml
+
+Now that you've cloned our environment (made it available for your use)
+from the .yml specification file, you can "activate" it.
+
+    conda activate autograder-3
+
+If this worked, then your prompt should be prefixed by the 
+environment name, like this:
+
+    (autograder-3) arya@ugradx:~/hw-lm/code$
+
+This means that third-party packages like NumPy are now
+available for you to "import" in your Python scripts. You
+are also, for sure, using the same Python version as we are.
+
+----------
+
+WARMUP 1.
+Starter code is provided here as "findsim.py".
+See the assignment handout for more info.
+
+----------
+
+WARMUP 2. (Extra credit)
+See the assignment handout for more info.
+
+----------
+
+QUESTION 1.
+Type "python3 fileprob.py --help" to see documentation.  
+
+Once you've familiarized yourself with the arguments, try
+to run the script like this:
+
+Usage:   python3 fileprob.py TRAIN smoother lexicon trainpath
+         python3 fileprob.py TEST smoother lexicon trainpath files...
+Example: python3 fileprob.py TRAIN add0.01 /home/arya/hw-lm/lexicons/words-10.txt /home/arya/hw-lm/speech/train/switchboard-small
+         python3 fileprob.py TEST add0.01 /home/arya/hw-lm/lexicons/words-10.txt /home/arya/hw-lm/speech/train/switchboard-small /home/arya/hw-lm/speech/sample*
+
+
+----------
+
+QUESTION 2.
+
+Copy fileprob.py to textcat.py.
+
+Modify textcat.py so that it does text categorization.
+
+For each training corpus, you should create a new language model.  You
+will first need to call set_vocab_size() on the pair of corpora, so
+that both models use the same vocabulary (derived from the union of
+the two corpora).  Note that set_vocab_size can take multiple files as
+arguments.  You can re-use the current LanguageModel object by using the
+following strategy.
+
+  (In TRAIN mode)
+  call lm.set_vocab_size() on the pair of training corpora
+
+  train model 1 from corpus 1
+  train model 2 from corpus 2
+  store the model parameters
+  terminate program
+
+  ===
+
+  (In TEST mode)
+  restore model 1 and model 2 the previously saved parameters
+  for each file,
+    compute its probability under model 1: save this in an array
+
+  for each file,
+    compute its probability under model 2: save this in an array
+  loop over the arrays and print the results
+
+There are other ways to solve this problem, if you prefer. However we
+require your TextCat to have two modes TRAIN and TEST. The TRAIN mode
+should train the models and save the parameters. The TEST mode should
+load the previously saved parameters and compute/print the results
+without looking at corpus 1 and 2.
+
+----------
+
+QUESTION 5.
+
+Modify the prob() function in Probs.py.  You are just filling in the
+case BACKOFF_ADDL.
+
+Remember you need to handle OOV words, and make sure the probabilities
+of all possible words after a given context sums up to one.
+
+As you are only adding a new model, the behavior of your old models such
+as ADDL should not change.
+
+----------------------------------------------------------------------
+
+QUESTION 6.
+
+(a) Modify the prob() function in Probs.py.  You are just filling in the
+case LOGLINEAR.
+
+Remember you need to handle *OOL* words.  This is slightly different than
+handling OOV words.
+
+(b) Implement stochastic gradient ascent in the train() function in Probs.py.
+
+(e) Modify both prob() and train() to add the new feature.
+
+As you are only adding a new model, nothing that you do should change
+your previous results.
+
+Using vector/matrix operation (optional):
+Training the log-linear model on en.1K can be done with simple "for" loops and
+2D array representation of matrices.  However, you're welcome to use NumPy's
+matrix/vector operations, which might reduce training time and simplify your
+code.
+
+----------

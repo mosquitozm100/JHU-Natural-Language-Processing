@@ -1,0 +1,7 @@
+Here we have training set 0 of each size.
+
+The RawData directory for this problem actually contains
+10 training sets for each size.  We won't use the others
+in this assignment, but they could be used to see how much
+the accuracy performance depends on the particular training
+set you get.

@@ -1,0 +1,1 @@
+SUBJECT: [ &NAME ] semantic tagset and / or annotated dictionaries Hello all , Does anybody know any existing , practical semantic tagset ( &CHAR ) and / or annotated dictionaries for English nouns , adjectives , verbs and adverbs . Many thanks , &NAME 

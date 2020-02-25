@@ -1,0 +1,160 @@
+#Discussion:
+#	Based on grammar3.gr, grammar7.gr mainly handle phenomena 7(a) and 7(d), that is the 'a'/'an' problem and the "embeded questions" in "I wonder".
+#	As for 7(a), we found that, as a determiner, the/a/an will always appear in the start of a noun phrase without considering the situation holding preposition pharse behind. So we came up with an idea that generating a noun phrase which is able to determine using "a" or "an" by backward trees. Firstly, we have to separate nouns, adjectives, adverbs into starting with vowel or not respectively. Thus, we add the following preterminals: Det-an which stands for "an",Noun-vowel,Adj-vowel,Adv-vowel to indicate those words start with vowels. Besides, we also defined following preterminals like: ADJP, ADVP to help building the tree.Because, we might have several adjectives and several adverbs in front of a noun, but there is only one determiner. Again, only the word in the most front of a noun phrase, no matter it's an adverb or an adjective or a noun, can decide the determiner. So, the idea could be showed by the following tree:
+
+#	NP---- Det + Noun
+#	  ---- Det-an + Noun-vowel
+#	  ---- ADJP + Noun               ADJP---- Det + Adj
+#	  									 ---- Det-an + Adj-vowel
+#	  									 ---- ADJP + Adj
+#	  									 ---- ADVP + Adv             ADVP---- Det + Adv
+#	  									 								 ---- Det-an + Adv-vowel
+#	  									 								 ---- ADVP + Adv
+#
+#	It's easy to find that in this way we start from the end of an NP----a noun, then generate the whole phrase backwards by adding adjectives and adverbs and finally, the determiner. As long as it goes into a branch contains Det or Det-an, it won't have more branch any more, which means when determiner appears, the generation of NP complete. And this is why ADJP and ADVP exist. They prevent the process from generate more than one determiner. Eventually, using "a" or "an" just depends on having "-vowel" or not.
+
+#	Then comes to 7(d), the words in front of "wh"s are quite fixed, we can just use "NP wonder"to create phrase similar with "I wonder", then, is just things about a question sentence, therefore we create a nonterminal named WHS. We grouped "wh" words into 3 groups----SWH, OWH, WDVVP. Firstly is subject question words: SWH, this is not that complex. Since it acts as subject, add a VP behind is fine. So we have a rule: WHS = SWH + VP. Then is the OWH stands for object "wh". Because the sentence after OWH has no object, so we have to generate this kind of sentence and that's why we define SWO(sentence without object). Thing is a SWO can embed in another SWO many times like :"what the president thought Sally thought a sandwitch ate", so we add two rules----SWO = NP + Vt and SWO = NP + Vt + SWO. Besides, sometimes a sentence may use intransitive verb and a preposition phrase as verb phrase, which leads to the object put behind a preposition word. Thus, we need another rule ---- WHS = OWH + NP + Vi + Prep. At last it's the adverbial "wh", these "wh"s contain decorating information, so it's not the main part of a sentence, so Advwh + S is ok.
+
+# Symbols in the grammar are case-sensitive.
+# 
+# This grammar uses a convention that
+#    - terminals are lowercase          (president)
+#    - preterminals are capitalized     (Noun)
+#    - other nonterminals are all-caps  (NP)
+#############################
+
+# Rules for creating full sentences.
+
+1	ROOT	S .
+1	ROOT	S !
+1   ROOT    it VP that S .           # Subject Clause, example:  3(e)
+1   ROOT    that S VP .              # The other way to express the same meaning with a Subject Clause, example: 3(f)
+1	ROOT	is it true that S ?     # mixing terminals and nonterminals is ok.
+1   ROOT    NP wonder WHS .          # Sentence model for "I wonder" sentence with embeded questions.
+
+# The basic grammar rules.  Here's what the abbreviations stand for:
+#    S  = sentence
+#    SWO  = sentence without object     # created for OWH since sentence after the "wh" has no object
+#    WHS = "wh" sentence
+#    NP = noun phrase
+#    VP = verb phrase
+#    PP = prepositional phrase
+#    PR = pronoun   # used for object clause, only have "that" right now 
+#    Det = determiner (sometimes called "article")
+#    Det-an = determiner-an  #an
+#    Prep = preposition
+#    ADJP = adjective phrase
+#    Adj = adjective
+#    Adj-vowel = adjective start with vowels
+#	 ADVP = adverb phrase
+#    Adv = adverb
+#    Adv-vowel = adverb start with vowels
+#	 Pnoun = proper noun  
+#    Vt = transitive verb
+#    Vi = intransitive verb
+#    Conj = conjunction
+#    Noun-vowel = Noun start with vowels
+#    Advwh = adverbial "Wh"
+#    Swh = Subject "Wh"
+#    Owh = Object "Wh"
+
+
+
+1	S	NP VP
+1   S   NP Vt Pr S
+1   SWO   NP Vt
+1   SWO   NP Vt Pr SWO
+1   WHS   Advwh S
+1   WHS   Swh  VP
+1   WHS   Owh  NP VP Prep
+1   WHS   Owh  SWO
+1	VP	Vt NP
+1   VP  Vi			#Verb is divied into transitive and intransitive verb, so VP has Vt+Noun and Vi
+1   VP  Vi PP       
+1   Vt  Vt Conj Vt         
+1   Vi  Vi Conj Vi  #both Vt and Vi can be used together on a Noun, but only can be use once right now
+1	NP	Pnoun
+1   NP  NP Conj NP
+1	NP	NP PP
+1   NP  ADJP Noun    # following are rules added for 7(a)
+1   NP  ADJP Noun-vowel
+1   NP  Det Noun
+1   NP  Det-an Noun-vowel
+1   ADJP  ADJP Adj
+1   ADJP  ADJP Adj-vowel
+1	ADJP  ADVP Adj
+1	ADJP  ADVP Adj-vowel
+1   ADJP  Det Adj
+1   ADJP  Det-an Adj-vowel
+1   ADVP  ADVP Adv
+1   ADVP  ADVP Adv-vowel
+1   ADVP  Det Adv
+1   ADVP  Det-an Adv-vowel
+1	PP	Prep NP 
+
+
+# Vocabulary.  Your program can see that "ate" is a terminal
+# symbol because there exists no rule for rewriting it.
+# Any symbol that can rewrite as a terminal (or a string of 
+# terminals, like "chief of staff") is called a "preterminal."  Notice 
+# that a preterminal is a special kind of nonterminal.
+
+1	Vt	ate
+1	Vt	wanted
+1	Vt	kissed
+1	Vt	understood
+1	Vt	pickled
+1   Vt  thought
+1   Vt  perplexed
+
+1   Vi  sighed
+1   Vi  worked
+
+1	Det	the
+1	Det	a
+1	Det	every
+
+1   Det-an an
+
+1	Noun	president
+1	Noun	sandwich
+1	Noun	pickle
+1	Noun	chief of staff
+1	Noun	floor
+
+1   Noun-vowel    apple
+
+1   Pnoun   Sally
+1   Pnoun   I
+
+1	Adj	    fine
+1	Adj	    delicious
+1	Adj	    perplexed
+1	Adj	    pickled
+
+1   Adj-vowel    ambivalent
+
+1   Adv     very
+
+1   Adv-vowel    apparently
+
+1	Prep	with
+1	Prep	on
+1	Prep	under
+1	Prep	in
+
+1   Conj    and
+1   Conj    or
+
+1   Pr    that
+
+1   Advwh   when
+1   Advwh   where
+1   Advwh   why
+
+1   Swh   what
+1   Swh   who
+
+1   Owh   which
+1   Owh   whom
+1   Owh   what

@@ -1,0 +1,20 @@
+The Switchboard corpus consists of telephone conversations between
+unacquainted adults. The corpus contains 2430 conversations averaging
+six minutes each, and totaling 240 hours of speech, or 2.4 million
+words.  The particpants were 543 speakers (302 male, 241 female) from
+all areas of the United States.
+
+A computer-driven "robot operator" system handled the calls, giving
+the caller appropriate recorded prompts, selecting and dialing another
+person (the callee) to take part in a conversation, introducing one of
+about 70 topics for discussion and recording the speech from the two
+subjects into separate channels until the conversation was finished.
+
+The train directory contains a careful transcription of the speech
+data by humans.  One would like to train a speech recognition system
+to come as close to this transcription as possible.  
+
+The test directory contains a bunch of candidate transcriptions
+produced from the speech by an existing speech recognizer.  The final
+step of speech recognition is to choose among these candidates using
+an n-gram model -- that's your job!

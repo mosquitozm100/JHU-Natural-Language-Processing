@@ -1,0 +1,1 @@
+SUBJECT: &NAME 15th Feb - Postponed Please note that the concert scheduled for this Saturday ( &NUM &NAME ) has had to be postponed for reasons beyond my control . I apologise for any inconvenience caused . Yours sincerely , &NAME &NAME Director of Music If you wish to be removed from this mailing list please send an email to &NAME Leader ( &EMAIL ) 

@@ -1,0 +1,1 @@
+SUBJECT: &NAME hour at * &NUM : &NUM * today &NAME hour will be at &NUM : &NUM today to avoid clashing with the open day . Back to the usual &NUM : &NUM next week . &NAME . 

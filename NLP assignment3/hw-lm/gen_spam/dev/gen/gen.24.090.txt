@@ -1,0 +1,1 @@
+SUBJECT: email Hi &NAME , I 've had around &NUM new emails donated - should be around the &NUMil word mark now . &CHAR 

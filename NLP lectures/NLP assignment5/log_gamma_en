@@ -1,0 +1,30 @@
+Model perplexity per tagged test word: 4062.432
+Tagging accuracy (Viterbi decoding): 88.49% (known: 96.42% seen: 49.21% novel: 49.20%)
+Iteration 0 Model perplexity per untagged raw word: 3123.282
+Model perplexity per tagged test word: 1950.309
+Tagging accuracy (Viterbi decoding): 87.50% (known: 95.79% seen: 52.46% novel: 39.85%)
+Iteration 1 Model perplexity per untagged raw word: 1294.014
+Model perplexity per tagged test word: 1966.489
+Tagging accuracy (Viterbi decoding): 86.90% (known: 95.20% seen: 51.89% novel: 39.18%)
+Iteration 2 Model perplexity per untagged raw word: 1278.297
+Model perplexity per tagged test word: 1991.537
+Tagging accuracy (Viterbi decoding): 86.76% (known: 95.02% seen: 51.79% novel: 39.34%)
+Iteration 3 Model perplexity per untagged raw word: 1271.318
+Model perplexity per tagged test word: 2021.562
+Tagging accuracy (Viterbi decoding): 86.71% (known: 94.96% seen: 51.79% novel: 39.28%)
+Iteration 4 Model perplexity per untagged raw word: 1267.834
+Model perplexity per tagged test word: 2052.855
+Tagging accuracy (Viterbi decoding): 86.68% (known: 94.93% seen: 51.93% novel: 39.13%)
+Iteration 5 Model perplexity per untagged raw word: 1266.309
+Model perplexity per tagged test word: 2080.829
+Tagging accuracy (Viterbi decoding): 86.65% (known: 94.91% seen: 51.74% novel: 39.23%)
+Iteration 6 Model perplexity per untagged raw word: 1265.646
+Model perplexity per tagged test word: 2100.906
+Tagging accuracy (Viterbi decoding): 86.64% (known: 94.92% seen: 51.50% novel: 39.23%)
+Iteration 7 Model perplexity per untagged raw word: 1265.314
+Model perplexity per tagged test word: 2111.099
+Tagging accuracy (Viterbi decoding): 86.63% (known: 94.91% seen: 51.41% novel: 39.23%)
+Iteration 8 Model perplexity per untagged raw word: 1265.125
+Model perplexity per tagged test word: 2115.253
+Tagging accuracy (Viterbi decoding): 86.62% (known: 94.91% seen: 51.41% novel: 39.23%)
+Iteration 9 Model perplexity per untagged raw word: 1265.013

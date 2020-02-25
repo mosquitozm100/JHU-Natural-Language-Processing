@@ -1,0 +1,1 @@
+SUBJECT: formal Hey &NAME , Just in case you did n't get the text message , we 're meeting at &NUM : &NUM tonight outside &NAME ( on &NAME Road ) for the formal . See you soon , &NAME 

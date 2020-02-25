@@ -1,0 +1,1 @@
+SUBJECT: [ &NAME ] &NAME concordance Does anyone else get a lot of duplicated entries when doing a concordance in &NAME ? Not sure if this is a bug or we are doing something wrong ... &NAME &NAME &NAME &NAME &NAME School of &NAME &NAME &NAME University &NAME ( UK ) &NAME : &NUM &NUM &NUM &NAME : &NUM &NUM &NUM Email : &EMAIL 

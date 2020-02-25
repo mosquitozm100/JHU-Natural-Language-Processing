@@ -1,0 +1,12 @@
+These data were extracted from a number of international government
+documents that were issued bilingually, in both English and Spanish.
+
+The documents can be found in RawData/English-corpus and
+RawData/Spanish-corpus if you're interested.
+
+RawData also contains extracts of varying lengths from these
+documents.  These extracts were then tokenized by letter to produce
+the training, development, and test sets.
+
+We've removed accent marks on letters to make it a little harder
+to distinguish English and Spanish just by the letter unigrams.

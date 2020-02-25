@@ -1,0 +1,1 @@
+SUBJECT: interpolation &NAME , How would you interpolate log-probs ? i.e. &NAME ( &CHAR ) &CHAR ( &CHAR ) + &NAME ( &CHAR ) &CHAR ( &CHAR ) - in standard probs ? ? - in log probs Any ideas ? &CHAR 

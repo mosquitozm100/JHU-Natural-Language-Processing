@@ -1,0 +1,7 @@
+#! /usr/bin/env bash
+
+# Activate the conda environment with necessary packages.
+# If this is failing locally, install Miniconda and reproduce our environment with the packages below.
+#!!!!source activate autograder-3  
+
+python3 randsent.py $*

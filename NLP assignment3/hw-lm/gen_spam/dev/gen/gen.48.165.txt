@@ -1,0 +1,1 @@
+SUBJECT: paper &NUM &NAME : we have assigned paper &NUM to a different section . so you do n't need to review it . if you had already started and had written comments please send them to me . thank you for your collaboration . regards , &NAME 

@@ -1,0 +1,1 @@
+SUBJECT: html &NAME , Do you think it would be OK to extract the plain text from &NAME attachments and then get rid of the &NAME information for the corpus ? The alternative is to leave the &NAME tags in the corpus and attempt to anonymise ' in-place ' . &NAME 

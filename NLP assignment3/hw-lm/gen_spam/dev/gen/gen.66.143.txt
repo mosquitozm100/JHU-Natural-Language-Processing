@@ -1,0 +1,1 @@
+SUBJECT: Ref. &NAME &NAME Dear &NAME and &NAME , I can confirm that &NAME &NAME worked for me at the University of &NAME from 1st January &NUM to 28th &NAME &NUM . Many thanks , &NAME &NAME . &NAME &NAME # email : &EMAIL &NAME &NUM &NAME &NAME # &NAME : &NUM &NAME University of &NAME # fax : &NUM &NAME &NAME &NAME &NAME # &WEBSITE 

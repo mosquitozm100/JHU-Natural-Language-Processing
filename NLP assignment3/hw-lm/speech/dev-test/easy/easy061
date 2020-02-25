@@ -1,0 +1,10 @@
+10	well you need x number of dollars for the [recipients]
+0.200	-4547.2651240589	9	<s> well you need x number dollars for the [recipient] </s>
+0.500	-4544.29509586806	12	<s> well you need x number dollars for their so at the end </s>
+0.500	-4553.56970138759	12	<s> well you need x number dollars for the rest of the n </s>
+0.100	-4545.24438920497	9	<s> well you need x number dollars for the [recipients] </s>
+0.500	-4550.14474336052	12	<s> well you need x number dollars for the rest of the end </s>
+0.200	-4549.61094619539	9	<s> well you need tax number dollars for the [recipients] </s>
+0.300	-4550.57851366948	10	<s> well you need a fax number dollars for the [recipients] </s>
+0.200	-4546.8073088326	10	<s> well are you need x number dollars for the [recipients] </s>
+0.100	-4545.24438920497	9	<s> well you need x number dollars for the [recipients] </s>

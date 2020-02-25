@@ -1,0 +1,105 @@
+#Discussion:
+#	This modification handles the following problems: 
+#		---Add a new type of preterminal: Pnoun stands for proper noun like "Sally","America", since this type of noun doesn't have a determiner in front. And add a grammar rule "NP = Pnoun" 3(a)
+#		---Add a new type of preterminal: Conj stands for conjunction to connect two verbs or nouns. 3(b)
+#		---Add a new type of preterminal: Vi stands for intransitive verb. 3(c)
+#		---Add a new type of preterminal: Pr stands for pronoun, it's mainly used in clause under current situations, and just have a value "that" right now. 3(d)
+#		---Add two new rules for creating full sentences. Dealing with subject clause sentences like 3(e) and 3(f), these two sentence express the similar meaning but write in different order of words.  
+#		---Add grammar rules like "Noun = Adj + Noun" and "Adj = Adv + Adj", they work in a similar way to let a noun has several adjectives in front and let those adjectives also have several adverb embellish. 3(g)
+#		---Add a grammar rule that "VP = Vi PP" : sometimes, intransitive verb can be followed by preposition phrase to have noun phrase behind.
+
+# Symbols in the grammar are case-sensitive.
+# 
+# This grammar uses a convention that
+#    - terminals are lowercase          (president)
+#    - preterminals are capitalized     (Noun)
+#    - other nonterminals are all-caps  (NP)
+#############################
+
+# Rules for creating full sentences.
+
+1	ROOT	S .
+1	ROOT	S !
+1   ROOT    it VP that S .           # Subject Clause, example:  3(e)
+1   ROOT    that S VP .              # The other way to express the same meaning with a Subject Clause, example: 3(f)
+1	ROOT	is it true that S ?     # mixing terminals and nonterminals is ok.
+
+# The basic grammar rules.  Here's what the abbreviations stand for:
+#    S  = sentence
+#    NP = noun phrase
+#    VP = verb phrase
+#    PP = prepositional phrase
+#    PR = pronoun    # used for object clause, only have "that" right now
+#    Det = determiner (sometimes called "article")
+#    Prep = preposition
+#    Adj = adjective
+#    Adv = adverb
+#	 Pnoun = proper noun   # This kind of noun doesn't need determiner, it's a special noun phrase(deal with "Sally" in 3(a),3(b))
+#    Vt = transitive verb  
+#    Vi = intransitive verb  # deal with intransitive verb like "sigh" in 3(c)
+#    Conj = conjunction   # use for conjunction between nouns or verbs like in 3(b)
+
+
+1	S	NP VP
+1   S   NP Vt Pr S  # clause
+1	VP	Vt NP
+1   VP  Vi			# Verb is divied into transitive and intransitive verb, so VP has Vt+Noun and Vi
+1   VP  Vi PP       # intransitive verb can be followed by preposition phrase
+1   Vt  Vt Conj Vt         
+1   Vi  Vi Conj Vi  # both Vt and Vi can be used together on a Noun, but only can be use once right now
+1	NP	Pnoun       # for the situation that just a proper noun acts as noun phrase,like: Sally
+1   NP  NP Conj NP  # Noun phrases can be conjuncted just like verbs
+1	NP	NP PP       
+1   NP  Det Noun
+1   Noun  Adj Noun   # Noun after the determiner can have adjectives
+1   Adj  Adv Adj     # Same as nouns, adjective can also be embellished by several adverb
+1	PP	 Prep NP 
+
+
+# Vocabulary.  Your program can see that "ate" is a terminal
+# symbol because there exists no rule for rewriting it.
+# Any symbol that can rewrite as a terminal (or a string of 
+# terminals, like "chief of staff") is called a "preterminal."  Notice 
+# that a preterminal is a special kind of nonterminal.
+
+1	Vt	ate
+1	Vt	wanted
+1	Vt	kissed
+1	Vt	understood
+1	Vt	pickled
+1   Vt  thought
+1   Vt  perplexed
+
+1   Vi  sighed
+1   Vi  worked
+
+1	Det	the
+1	Det	a
+1	Det	every
+
+1	Noun	president
+1	Noun	sandwich
+1	Noun	pickle
+1	Noun	chief of staff
+1	Noun	floor
+1   Noun    proposal
+1   Noun    desk
+
+1   Pnoun   Sally
+
+1	Adj	fine
+1	Adj	delicious
+1	Adj	perplexed
+1	Adj	pickled
+
+1   Adv very
+
+1	Prep	with
+1	Prep	on
+1	Prep	under
+1	Prep	in
+
+1   Conj    and
+1   Conj    or
+
+1   Pr    that

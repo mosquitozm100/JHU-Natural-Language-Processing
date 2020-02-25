@@ -1,0 +1,1 @@
+SUBJECT: &NAME Dear All Just to let you know that there will be no second &NAME delivery or collection on Wednesday &NUM , Thursday &NUM and Friday &NUM March . Back to normal on Monday &NUM March . Thanks &NAME 

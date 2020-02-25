@@ -1,0 +1,65 @@
+(ROOT (S (NP (Det the)
+             (Noun chief
+                   of
+                   staff))
+         (VP (Verb kissed)
+             (NP (Det the)
+                 (Noun (Adj delicious)
+                       (Noun (Adj pickled)
+                             (Noun (Adj fine)
+                                   (Noun (Adj fine)
+                                         (Noun (Adj pickled)
+                                               (Noun (Adj fine)
+                                                     (Noun (Adj fine)
+                                                           (Noun (Adj delicious)
+                                                                 (Noun (Adj delicious)
+                                                                       (Noun chief
+                                                                             of
+                                                                             staff)))))))))))))
+      .)
+(ROOT (S (NP (Det the)
+             (Noun (Adj pickled)
+                   (Noun (Adj delicious)
+                         (Noun sandwich))))
+         (VP (Verb understood)
+             (NP (Det the)
+                 (Noun floor))))
+      .)
+(ROOT is
+      it
+      true
+      that
+      (S (NP (Det the)
+             (Noun (Adj fine)
+                   (Noun (Adj delicious)
+                         (Noun (Adj fine)
+                               (Noun (Adj delicious)
+                                     (Noun president))))))
+         (VP (Verb pickled)
+             (NP (Det the)
+                 (Noun (Adj delicious)
+                       (Noun (Adj perplexed)
+                             (Noun (Adj delicious)
+                                   (Noun (Adj fine)
+                                         (Noun floor))))))))
+      ?)
+(ROOT (S (NP (Det the)
+             (Noun pickle))
+         (VP (Verb pickled)
+             (NP (Det a)
+                 (Noun (Adj pickled)
+                       (Noun (Adj pickled)
+                             (Noun (Adj fine)
+                                   (Noun president)))))))
+      .)
+(ROOT is
+      it
+      true
+      that
+      (S (NP (Det a)
+             (Noun (Adj perplexed)
+                   (Noun president)))
+         (VP (Verb wanted)
+             (NP (Det a)
+                 (Noun floor))))
+      ?)

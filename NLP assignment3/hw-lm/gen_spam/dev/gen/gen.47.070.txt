@@ -1,0 +1,1 @@
+SUBJECT: Reminder about tomorrows Part &NUM and &NUM ( &CHAR ) Group Project Presentations at &NUM Just to remind you that tomorrows &ORG will be in &NAME Theatre &NUM at &NUM . This will be the Part &NUM and &NUM ( &CHAR ) Group Project Presentations . 

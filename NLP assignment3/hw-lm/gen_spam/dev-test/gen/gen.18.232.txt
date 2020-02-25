@@ -1,0 +1,1 @@
+SUBJECT: Vote Count this as a vote for group &NUM . ( &NAME , &NAME etc. ) &CHAR 

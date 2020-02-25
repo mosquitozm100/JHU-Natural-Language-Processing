@@ -1,0 +1,31 @@
+The GenSpam corpus, released in 2006, was created by Ben Medlock, a
+Ph.D. student at Cambridge University, in order to test and compare
+various spam detection techniques.  It is described here:
+
+   paper: http://www.cl.cam.ac.uk/~bwm23/medlockCEAS2006.pdf 
+   slides: http://www.ceas.cc/2006/presentations/Learning-based%20Filters%20I/medlock.pdf
+
+   B. Medlock, An adaptive, semi-structured language model approach to
+   spamﬁfiltering on a new corpus. In Proceedings of the Third
+   Conference on Email and Anti-Spam (CEAS 2006), Mountain View, CA,
+   2006.
+
+The version presented in these directories has been simplified for you
+in various ways.  In particular, it is plain text, not XML, and the
+training messages have all been concatenated together for convenience.
+So real research should use the original GenSpam corpus, not this one.
+
+The spam data come from www.spamarchive.org.  The "Gen" (genuine) data
+come from 15 real individuals, and have been anonymized using NLP
+techniques to protect confidentiality, as follows:
+
+   We use the RASP [3] part-of-speech tagger as well as ﬁfinite-state
+   techniques to identify and anonymise proper names, numbers, email
+   addresses and URLs. The following tokens are used in place of their
+   respective references:
+
+   &NAME (proper names)
+   &CHAR (individual characters)•
+   &NUM (numbers)
+   &EMAIL (email addresses)
+   &URL (internet urls)

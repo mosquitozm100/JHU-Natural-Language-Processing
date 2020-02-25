@@ -1,0 +1,1 @@
+SUBJECT: formal Hi &NAME , I booked &NUM guest tickets this morning for Monday 's formal , &NUM vegetarian , &NUM vegan and &NUM normal . I now realise that the normal should actually be a vegetarian as well . Is it possible to change it ? Thanks , &NAME &NAME 

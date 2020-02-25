@@ -1,0 +1,1 @@
+SUBJECT: Re : &NAME No thanks , I 've already dealt with it . &CHAR On Mon , &NUM &NAME &NUM , &NAME &NAME wrote : <QUOTE> still want me to pick up your bike ? <QUOTE> Hey &NAME , I 'm going to formal tonight with some course bods , so I wo n't join you - you 'll enjoy it though ! &CHAR <END_QUOTE> <END_QUOTE> 

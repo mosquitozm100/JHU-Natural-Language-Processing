@@ -1,0 +1,1 @@
+SUBJECT: Generalised Weak Permutation &NAME , Thinking about the &NAME rule . Is there paper where it is introduced and discussed . Also does it have an isomorphism with any calculus rules ( lambek or whatever ) . &NAME 

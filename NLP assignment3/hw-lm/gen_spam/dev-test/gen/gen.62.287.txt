@@ -1,0 +1,1 @@
+SUBJECT: Internal Decoration Decoration will begin today on the ground floor Chapel corridor and will continue into the ground floor &CHAR corridor towards &NAME . We apologise for any inconvenience this may cause . Best wishes . &NAME ( &NAME secretary ) If you wish to be removed from this mailing list please send an email to &NAME Leader ( &EMAIL ) 

@@ -1,0 +1,1 @@
+SUBJECT: Any suggestions as to how I move nlgrp * to &NAME ? I 'd like to move ligrp * to the new &NAME . Any sugegstions as to how , when ( early AM , lunch time or evening ) , and which bits need care ( i.e. may be being written to ) ? 

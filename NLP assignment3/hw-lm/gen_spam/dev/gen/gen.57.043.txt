@@ -1,0 +1,1 @@
+SUBJECT: &NAME project : about permission to use your unreleased tagger . Hi . I 'd like to ask for permission to use your unreleased pos-tagger ( the version that ignores xml-tags . ) and your tokeniser for my project . &NAME 's given me a hint that this has some advantages ... cheers . &NAME . 

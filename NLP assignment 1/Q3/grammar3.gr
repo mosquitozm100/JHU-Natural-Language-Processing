@@ -1,0 +1,93 @@
+# Symbols in the grammar are case-sensitive.
+# 
+# This grammar uses a convention that
+#    - terminals are lowercase          (president)
+#    - preterminals are capitalized     (Noun)
+#    - other nonterminals are all-caps  (NP)
+#############################
+
+# Rules for creating full sentences.
+
+1	ROOT	S .
+1	ROOT	S !
+1   ROOT    It VP that S            # Subject Clause, example:  3(e)
+1   ROOT    That S VP               # The other way to express the same meaning with a Subject Clause, example: 3(f)
+1	ROOT	is it true that S ?     # mixing terminals and nonterminals is ok.
+
+# The basic grammar rules.  Here's what the abbreviations stand for:
+#    S  = sentence
+#    NP = noun phrase
+#    VP = verb phrase
+#    PP = prepositional phrase
+#    PR = pronoun
+#    Det = determiner (sometimes called "article")
+#    Prep = preposition
+#    Adj = adjective
+#    Adv = adverb
+#	 Pnoun = proper noun  
+#    Vt = transitive verb
+#    Vi = intransitive verb
+#    Conj = conjunction
+
+
+1	S	NP VP
+1   S   NP VP PR S
+1	VP	Vt NP
+1   VP  Vi			#Verb is divied into transitive and intransitive verb, so VP has Vt+Noun and Vi
+1   VP  Vi PP       
+1   Vt  Vt Conj Vt         
+1   Vi  Vi Conj Vi  #both Vt and Vi can be used together on a Noun, but only can be use once right now
+1	NP	Pnoun
+1   NP  NP Conj NP
+1	NP	NP PP
+1   NP  Det Noun
+1   Noun Adj Noun
+1   Adj Adv Adj
+1	PP	Prep NP 
+
+
+# Vocabulary.  Your program can see that "ate" is a terminal
+# symbol because there exists no rule for rewriting it.
+# Any symbol that can rewrite as a terminal (or a string of 
+# terminals, like "chief of staff") is called a "preterminal."  Notice 
+# that a preterminal is a special kind of nonterminal.
+
+1	Vt	ate
+1	Vt	wanted
+1	Vt	kissed
+1	Vt	understood
+1	Vt	pickled
+1   Vt  thought
+1   Vt  perplexed
+
+1   Vi  sighed
+1   Vi  worked
+
+1	Det	the
+1	Det	a
+1	Det	every
+
+1	Noun	president
+1	Noun	sandwich
+1	Noun	pickle
+1	Noun	chief of staff
+1	Noun	floor
+
+1   Pnoun   Sally
+
+1	Adj	fine
+1	Adj	delicious
+1	Adj	perplexed
+1	Adj	pickled
+
+1   Adv very
+
+1	Prep	with
+1	Prep	on
+1	Prep	under
+1	Prep	in
+
+1   Conj    and
+1   Conj    or
+
+1   PR    that
